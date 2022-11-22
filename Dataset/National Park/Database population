@@ -1,0 +1,70 @@
+show DATABASES
+USE Project
+show TABLES
+
+SELECT * FROM Species LIMIT 10
+
+SELECT * FROM Wildlife_Trade LIMIT 10
+
+
+CREATE TABLE Wild_fire (
+FireID INT,
+FIRE_SIZE VARCHAR(5),
+Latitude DECIMAL (15, 5),
+Longitude DECIMAL (15, 5),
+STATE VARCHAR (5),
+FIPS_NAME VARCHAR(32),
+FIRE_NAME VARCHAR(32),
+DISCOVERY_DATE DECIMAL (15,5),
+CAUSE VARCHAR(64),
+National_park VARCHAR(64),
+PRIMARY KEY (FireID)
+);
+
+CREATE TABLE Occurrence AS (
+    SELECT ID,Code AS Park_ID, Scientific_Name,Park_Name,Occurrence,Abundance,Seasonality
+    FROM  Species JOIN National_Park on Park_Name=Name
+)
+
+CREATE TABLE TEMP AS (
+    SELECT * FROM Species
+)
+
+CREATE TABLE Species AS (
+    SELECT DISTINCT Scientific_Name,Family,Conservation_status
+    FROM TEMP
+)
+
+CREATE TABLE Family_Order AS (
+    SELECT DISTINCT Family,SpeciesOrder
+    FROM TEMP
+)
+
+CREATE TABLE Order_Category AS (
+    SELECT DISTINCT Category,SpeciesOrder
+    FROM TEMP
+)
+
+CREATE TABLE Species_Trade AS (
+    SELECT Taxon,Importer,Exporter,Term,Quantity
+    FROM Wildlife_Trade
+)
+
+CREATE TABLE Species_Appendix AS (
+    SELECT DISTINCT Taxon,Appendix
+    FROM Wildlife_Trade
+)
+
+CREATE TABLE Species_Genus AS (
+    SELECT DISTINCT Taxon,Genus
+    FROM Wildlife_Trade
+)
+
+CREATE TABLE Occurrence AS (
+    SELECT ID,Scientific_Name,Park_Name,Occurrence,Abundance,Seasonality
+    FROM  Occurrences
+)
+
+SELECT COUNT(Occurrence)  FROM Wild_fire JOIN Species ON Wild_fire.National_park=Species.Park_Name  GROUP BY Wild_fire.CAUSE ORDER BY COUNT(Occurrence)
+
+SELECT * FROM National_Park LIMIT 5
