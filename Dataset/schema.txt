@@ -1,0 +1,20 @@
+Occurrence
+	ID PRIMARY, Scientific_Name, Park_ID, Occurrence, Abundance, Seasonality
+Species
+Scientific_Name, Family, Conservation_status, Common_name
+Family_Order
+	Family , SpeciesOrder
+Order_Category
+	SpeciesOrder, Category
+National_Park
+	Code PRIMARY, Name, State, Acres, Latitude, Longitude
+
+Species_Trade
+	Taxon(Scientific_Name)Importer, Exporter, Term, Quantity
+Species_Appendix
+	Taxon, Appendix
+Species_Genus
+	Taxon, Genus
+
+Wild_fire
+ 	Fire_id, FIRE_SIZE,Latitude, Longitude, STATE, FIPS_NAME, FIRE_NAME, DISCOVERY_DATE, CAUSE, National_park
