@@ -31,7 +31,7 @@ CREATE TABLE TEMP AS (
 )
 
 CREATE TABLE Species AS (
-    SELECT DISTINCT Scientific_Name,Family,Conservation_status
+    SELECT DISTINCT Scientific_Name,Family,Conservation_status,Common_Names
     FROM TEMP
 )
 
