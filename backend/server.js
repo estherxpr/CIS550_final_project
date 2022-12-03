@@ -33,7 +33,7 @@ webapp.get('/parks/name/:name', async (req, res) => {
 
 webapp.get('/parks/code/:code', async (req, res) => {
     try {
-        const results = await lib.getParkByName(req.params.code);
+        const results = await lib.getParkByCode(req.params.code);
         res.status(200).json({ data: results });
     } catch (err) {
         res.status(404).json({ error: err.message });
@@ -42,7 +42,7 @@ webapp.get('/parks/code/:code', async (req, res) => {
 
 webapp.get('/species/name/:name', async (req, res) => {
     try {
-        const results = await lib.getParkByName(req.params.name);
+        const results = await lib.getSpeciesByName(req.params.name);
         res.status(200).json({ data: results });
     } catch (err) {
         res.status(404).json({ error: err.message });
