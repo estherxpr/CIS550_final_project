@@ -1,6 +1,23 @@
 {
+  "scripts": {
+    "start": "node index.js"
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "CIS550 Project backend module",
+  "main": "index.js",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "mysql2": "^2.3.3"
-  }
+  },
+  "devDependencies": {},
+  "keywords": [
+    "species",
+    "national",
+    "parks",
+    "nature"
+  ],
+  "author": "Minzheng Zhang, Peiran Xu, Xiangchen Guan, Zijian Xiao",
+  "license": "ISC"
 }
