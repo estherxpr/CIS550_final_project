@@ -209,7 +209,7 @@ const getSpeciesAbundanceByState = async (state) => {
     const query = "SELECT COUNT(DISTINCT O.Scientific_Name) AS SPECIES_NUM  \
                   FROM Occurrence O WHERE O.Park_Name IN \
                   (SELECT NP.Name FROM National_Park NP WHERE NP.state = ? ) ";
-    const params = [fire_size];
+    const params = [state];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -244,15 +244,16 @@ const filterSpecies = async (park,family,order) => {
 };
 
 //Query8: filter park by fire suffer:
-const getParksByFireSuffer = async (percent) => {
+const getParksByFireSuffer = async (args) => {
   try {
     const db = await getDB();
-    const query = " WITH TEMP AS (SELECT Scientific_Name, COUNT(*)\
+    const num = 5 * args.percent;
+    const query = ` WITH TEMP AS (SELECT Scientific_Name, COUNT(*)\
 					FROM Wild_fire W\
 						JOIN Occurrence O on W.National_park=O.Park_Name\
 					GROUP BY Scientific_Name\
 					ORDER BY COUNT(*) DESC\
-					LIMIT ?*4.83)\
+					LIMIT 2000)\
 					SELECT Name\
 					FROM National_Park N JOIN Occurrence O on N.Name=O.Park_Name\
 					WHERE O.Scientific_Name IN (SELECT Scientific_Name  FROM TEMP)\
@@ -260,8 +261,9 @@ const getParksByFireSuffer = async (percent) => {
 					HAVING COUNT(*)>(SELECT 0.01*COUNT(*)\
                          FROM National_Park N2\
                          WHERE N2.Name=N.Name\   GROUP BY N2.Name)\
-					ORDER BY  N.Name";
-	const params = [percent];
+					ORDER BY  N.Name\
+					LIMIT ${num}`;
+	const params = [num];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -309,7 +311,7 @@ const FindSpeciesInNotIn = async (category,in_state1,in_state2,not_in_state3) =>
 					AND temp.Scientific_Name not in (\
 					SELECT Scientific_Name\
 					FROM temp\
-					WHERE temp.Park_Name in (SELECT Name FROM National_Park np WHERE np.State = '?));";
+					WHERE temp.Park_Name in (SELECT Name FROM National_Park np WHERE np.State = ?));";
 	const params = [category,in_state1,in_state2,not_in_state3];
     const [rows] = await db.execute(query, params);
     return rows;
