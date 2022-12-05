@@ -219,7 +219,7 @@ const getSpeciesAbundanceByState = async (state) => {
 };
 
 //Query7: filter species according to multiple conditions:
-const filterSpecies = async (park,family,order) => {
+const getFilteredSpecies = async (park,family,order) => {
   try {
     const db = await getDB();
     const query = " WITH Temp AS (\
@@ -244,11 +244,11 @@ const filterSpecies = async (park,family,order) => {
 };
 
 //Query8: filter park by fire suffer:
-const getParksByFireSuffer = async (args) => {
+const getParksByFireSuffer = async (percent) => {
   try {
     const db = await getDB();
-    const num = 5*args.percent;
-    const query = `WITH TEMP AS (SELECT Scientific_Name, COUNT(*)\
+    const num = 5 * args.percent;
+    const query = ` WITH TEMP AS (SELECT Scientific_Name, COUNT(*)\
 					FROM Wild_fire W\
 						JOIN Occurrence O on W.National_park=O.Park_Name\
 					GROUP BY Scientific_Name\
@@ -262,8 +262,26 @@ const getParksByFireSuffer = async (args) => {
                          FROM National_Park N2\
                          WHERE N2.Name=N.Name\   GROUP BY N2.Name)\
 					ORDER BY  N.Name\
-          LIMIT ${num}`;
-    const params = [num];
+					LIMIT ${num}`;
+	const params = [num];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+// Query 9: filter parks by fire class 
+const getParksByFireClass = async (args) => {
+  try {
+    const db = await getDB();
+    const query = ` SELECT Name\
+				FROM National_Park np\
+				WHERE np.State in (     SELECT DISTINCT state\
+    							FROM Wild_fire wf\
+   							WHERE wf.FIRE_SIZE = ?\
+							)`;
+    const params = [args.fireClass];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -272,8 +290,8 @@ const getParksByFireSuffer = async (args) => {
   }
 };
 
-//Query9: Find all Species Order distribution in different parks in a State 
-const OrderListInState = async (state) => {
+//Query10: Find all Species Order distribution in different parks in a State 
+const getOrderListInState = async (state) => {
   try {
     const db = await getDB();
     const query = " SELECT FO.SpeciesOrder, O.Park_Name, COUNT(*) AS NUM\
@@ -292,8 +310,8 @@ const OrderListInState = async (state) => {
   }
 };
 
-//Query10: Find all Species in certain category live in some state but not some other state without severe fire
-const FindSpeciesInNotIn = async (category,in_state1,in_state2,not_in_state3) => {
+//Query11: Find all Species in certain category live in some state but not some other state without severe fire
+const getSpeciesBySpecificState = async (category,in_state1,in_state2,not_in_state3) => {
   try {
     const db = await getDB();
     const query = " WITH temp as (\
@@ -311,7 +329,7 @@ const FindSpeciesInNotIn = async (category,in_state1,in_state2,not_in_state3) =>
 					AND temp.Scientific_Name not in (\
 					SELECT Scientific_Name\
 					FROM temp\
-					WHERE temp.Park_Name in (SELECT Name FROM National_Park np WHERE np.State = '?));";
+					WHERE temp.Park_Name in (SELECT Name FROM National_Park np WHERE np.State = ?));";
 	const params = [category,in_state1,in_state2,not_in_state3];
     const [rows] = await db.execute(query, params);
     return rows;
@@ -328,8 +346,11 @@ module.exports = {
   getDB,
   closeMySQLConnection,
   getAllParks,
+  getFilteredSpecies,
   getParkByName,
   getParkByCode,
+  getParksByFireSuffer,
+  getParksByFireClass,
   getSpeciesByName,
   getSpeciesBySName,
   getSpeciesByAbundance,
@@ -339,8 +360,6 @@ module.exports = {
   getSpeciesByState,
   getSpeciesByFireClass,
   getSpeciesAbundanceByState,
-  getParksByFireSuffer,
-  OrderListInState,
-  FindSpeciesInNotIn,
-  filterSpecies 
+  getSpeciesBySpecificState,
+  getOrderListInState,	
 }
