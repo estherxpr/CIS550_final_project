@@ -47,7 +47,88 @@ app.get('/species/:species', async (req, res) => {
     //   result = await lib.getSpeciesByCode(species);
     //   // seems we do not have species Id in the database
     // } else {
-    const result = await lib.getSpeciesByName(species);
+
+    // Here my idea is we might want to return all the results to user,
+    // so concat two arrays
+    const result1 = await lib.getSpeciesByName(species);
+    const result2 = await lib.getSpeciesBySName(species);
+    const result = [...result1, ...result2];
+    // }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/species/:park/:family/:order/species',  async (req, res) => {
+  try {
+    const { park, family, order } = req.params;
+    const result = await lib.getFilteredSpecies(park, family, order);
+    // }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/species/:abundance/abundance',  async (req, res) => {
+  try {
+    const { abundance } = req.params;
+    const result = await lib.getSpeciesByAbundance(abundance);
+    // }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/species/:park/park',  async (req, res) => {
+  try {
+    const { park } = req.params;
+    const result = await lib.getSpeciesByParkName(park);
+    // }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/species/:category/category',  async (req, res) => {
+  try {
+    const { park } = req.params;
+    const result = await lib.getSpeciesByCategory(category);
+    // }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/species/sameCountry',  async (req, res) => {
+  try {
+    const result = await lib.getSpeciesSameCountry();
+    // }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/species/:state/abundanceByState',  async (req, res) => {
+  try {
+    const { state } = req.params;
+    const result = await lib.getSpeciesAbundanceByState(state);
+    // }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/species/:category/:state1/:state2/:state3/speciesBySpecificState',  async (req, res) => {
+  try {
+    const { category, state1, state2, state3 } = req.params;
+    const result = await lib.getSpeciesBySpecificState(category, state1, state2, state3);
     // }
     res.status(200).json({ data: result });
   } catch (err) {
@@ -167,6 +248,16 @@ app.get('/search/parks?', async (req, res) => {
         return;
       }
     }
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.get('/orders/:state', async (req, res) => {
+  const { state } = req.params;
+  try {
+    const result = await lib.getOrderListInState(state);
+    res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }

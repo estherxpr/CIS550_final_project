@@ -72,6 +72,60 @@ const getParkByCode = async (code) => {
   }
 };
 
+// get parks by state
+const getParksByState = async (state) => {
+  try {
+    const db = await getDB();
+    const query = 'SELECT * FROM National_Park WHERE State = ?';
+    const params = [state];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
+// get fires by state
+const getFiresByState = async (state) => {
+  try {
+    const db = await getDB();
+    const query = 'SELECT * FROM Wild_fire WHERE STATE = ?';
+    const params = [state];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
+// get all states
+const getAllStates = async () => {
+  try {
+    const db = await getDB();
+    const query = '';
+    const [rows] = await db.execute(query);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
+// get state by name
+const getStateByName = async (state) => {
+  try {
+    const db = await getDB();
+    const query = '';
+    const params = [state];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
 
 // get Species by common_name
 const getSpeciesByName = async (name) => {
@@ -132,6 +186,19 @@ const getSpeciesByParkName = async (parkname) => {
   }
 };
 
+const getTradesBySpecies = async (species) => {
+  try {
+    const db = await getDB();
+    const query = 'SELECT * FROM Wildlife_Trade WHERE Taxon = ?';
+    const params = [species];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
 // Queries in Milestone3
 // Query 2, select species by category
 const getSpeciesByCategory = async (category) => {
@@ -184,7 +251,7 @@ const getSpeciesByState = async (state) => {
 };
 
 // Query5: Select all parks that in a state that has fire of class A
-const getSpeciesByFireClass = async (fire_size) => {
+const getParksByFireClass = async (args) => {
   try {
     const db = await getDB();
     const query = "SELECT Name \
@@ -193,7 +260,7 @@ const getSpeciesByFireClass = async (fire_size) => {
                    select distinct state \
                    from Wild_fire wf \
                    where wf.FIRE_SIZE = ?)";
-    const params = [fire_size];
+    const params = [args.fireClass];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -271,26 +338,8 @@ const getParksByFireSuffer = async (percent) => {
     throw new Error('Error executing the query');
   }
 };
-// Query 9: filter parks by fire class 
-const getParksByFireClass = async (args) => {
-  try {
-    const db = await getDB();
-    const query = ` SELECT Name\
-				FROM National_Park np\
-				WHERE np.State in (     SELECT DISTINCT state\
-    							FROM Wild_fire wf\
-   							WHERE wf.FIRE_SIZE = ?\
-							)`;
-    const params = [args.fireClass];
-    const [rows] = await db.execute(query, params);
-    return rows;
-  } catch (err) {
-    console.log(`Error: ${err.message}`);
-    throw new Error('Error executing the query');
-  }
-};
 
-//Query10: Find all Species Order distribution in different parks in a State 
+//Query9: Find all Species Order distribution in different parks in a State 
 const getOrderListInState = async (state) => {
   try {
     const db = await getDB();
@@ -310,7 +359,7 @@ const getOrderListInState = async (state) => {
   }
 };
 
-//Query11: Find all Species in certain category live in some state but not some other state without severe fire
+//Query10: Find all Species in certain category live in some state but not some other state without severe fire
 const getSpeciesBySpecificState = async (category,in_state1,in_state2,not_in_state3) => {
   try {
     const db = await getDB();
@@ -346,11 +395,16 @@ module.exports = {
   getDB,
   closeMySQLConnection,
   getAllParks,
+  getAllStates,
+  getStateByName,
   getFilteredSpecies,
+  getTradesBySpecies,
   getParkByName,
   getParkByCode,
   getParksByFireSuffer,
   getParksByFireClass,
+  getParksByState,
+  getFiresByState,
   getSpeciesByName,
   getSpeciesBySName,
   getSpeciesByAbundance,
@@ -358,7 +412,6 @@ module.exports = {
   getSpeciesByCategory,
   getSpeciesSameCountry,
   getSpeciesByState,
-  getSpeciesByFireClass,
   getSpeciesAbundanceByState,
   getSpeciesBySpecificState,
   getOrderListInState,	
