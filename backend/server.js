@@ -209,7 +209,7 @@ app.get('/search/parks?', async (req, res) => {
   // every single query can be a list, connected by #
   const {
     keyword, expectedFiled,
-    isexpectedFiledUnique,
+    isExpectedFiledUnique,
     groupBy,
     orderBy,
     limit,
@@ -226,7 +226,7 @@ app.get('/search/parks?', async (req, res) => {
           percent,
           orderBy,
           expectedFiled,
-          isexpectedFiledUnique,
+          isExpectedFiledUnique,
           limit,
           groupBy,
         };
@@ -236,7 +236,7 @@ app.get('/search/parks?', async (req, res) => {
       }
       case ('fireClass'): { // this correlated to query 5
         const args = {
-          fireClass, orderBy, expectedFiled, limit, isexpectedFiledUnique, groupBy,
+          fireClass, orderBy, expectedFiled, limit, isExpectedFiledUnique, groupBy,
         };
         const result = await lib.getParksByFireClass(args);
         res.status(200).json({ data: result });
