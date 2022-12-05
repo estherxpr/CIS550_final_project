@@ -1,7 +1,8 @@
-const webapp = require('./server');
+
+const app = require('./server');
 
 const port = 8080;
 
-webapp.listen(port, async () => {
-  console.log(`Server runnning on port: ${port}`);
+app.listen(port, async () => {
+  console.log(`Server running on port: ${port}`);
 });
