@@ -41,11 +41,11 @@ function Examples() {
               <Button
                 className="btn-round"
                 color="default"
-                to="/profile-page"
+                to="/State"
                 outline
                 tag={Link}
               >
-                View Profile Page
+                View State Page
               </Button>
             </div>
           </Row>

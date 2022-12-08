@@ -1,9 +1,10 @@
 import React from "react";
 
 // reactstrap components
-import { Container } from "reactstrap";
+import { Container, UncontrolledDropdown, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
 // core components
+
 
 function ProfilePageHeader() {
   let pageHeader = React.createRef();
@@ -35,23 +36,31 @@ function ProfilePageHeader() {
           ref={pageHeader}
         ></div>
         <Container>
-          <div className="photo-container">
+          {/* <div className="photo-container">
             <img alt="..." src={require("assets/img/ryan.jpg")}></img>
-          </div>
-          <h3 className="title">Ryan Scheinder</h3>
-          <p className="category">Photographer</p>
+          </div> */}
+          <h3 className="title">State</h3>
+          {/* <Dropdown group isOpen={this.state.dropdownOpen} size="sm" toggle={this.toggle}> */}
+          <UncontrolledDropdown>
+            <DropdownToggle caret>
+              State
+            </DropdownToggle>
+            <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
+              <DropdownItem>PA</DropdownItem>
+              <DropdownItem>CA</DropdownItem>
+              <DropdownItem>WA</DropdownItem>
+              <DropdownItem>NY</DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+          <p className="category">State Name</p>
           <div className="content">
             <div className="social-description">
-              <h2>26</h2>
-              <p>Comments</p>
+              <p>number of parks</p>
+              <h2>Parks</h2>
             </div>
             <div className="social-description">
-              <h2>26</h2>
-              <p>Comments</p>
-            </div>
-            <div className="social-description">
-              <h2>48</h2>
-              <p>Bookmarks</p>
+              <p>number of species</p>
+              <h2>Species</h2>
             </div>
           </div>
         </Container>
