@@ -1,10 +1,10 @@
 /*eslint-disable*/
 import React from "react";
 
-// reactstrap components
+
 import { Container } from "reactstrap";
 
-function DarkFooter() {
+function Footer() {
   return (
     <footer className="footer" data-background-color="black">
       <Container>
@@ -21,12 +21,11 @@ function DarkFooter() {
           </ul>
         </nav>
         <div className="copyright" id="copyright">
-          © {new Date().getFullYear()}, Built By Group 39 
-
+          © 2022, Built By Group 39 
         </div>
       </Container>
     </footer>
   );
 }
 
-export default DarkFooter;
+export default Footer;

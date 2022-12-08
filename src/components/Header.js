@@ -2,17 +2,17 @@
 import React from "react";
 
 import { Container } from "reactstrap";
-
-function IndexHeader() {
+import homepage from "assets/img/homepage.jpg";
+function Header() {
 
 
   return (
-    <>
+    <div>
       <div className="page-header clear-filter" >
         <div
           className="page-header-image"
           style={{
-            backgroundImage: "url(" + require("assets/img/homepage.jpg") + ")"
+            backgroundImage: "url(" + homepage + ")"
           }}
         ></div>
         <Container>
@@ -24,8 +24,8 @@ function IndexHeader() {
           </h6>
         </Container>
       </div>
-    </>
+    </div>
   );
 }
 
-export default IndexHeader;
+export default Header;
