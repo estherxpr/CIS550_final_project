@@ -1,19 +1,18 @@
 import React from "react";
-
+import species from "assets/img/species.jpg";
 // reactstrap components
 import {
-
   Container,
-
+  CardHeader,
   Table,
   Card,
   CardBody,
 } from "reactstrap";
 
 // core components
-import StatePageHeader from "components/StatesHeader.js";
+import SpeciesHeader from "components/SpeciesHeader.js";
 
-function StatePage() {
+function SpeciesPage() {
   React.useEffect(() => {
     document.body.classList.add("profile-page");
     document.body.classList.add("sidebar-collapse");
@@ -30,25 +29,11 @@ function StatePage() {
   return (
     <div>
       <div className="wrapper">
-        <StatePageHeader />
+        <SpeciesHeader />
         <div className="section">
 
           <Container>
-            {/* parks define by state */}
-            <h3 className="title">Parks</h3>
-            <Table bordered height="200">
-              <thead>
-                <tr>
-                  <th scope="col">Park Code</th>
-                  <th scope="col">Park Name</th>
-                  <th scope="col">Number of Species</th>
-                </tr>
-              </thead>
-              <tbody>
-
-              </tbody>
-            </Table>
-            <h3 className="title">Species Order Distribution</h3>
+            <h3 className="title">Species</h3>
             <Card>
               <CardBody>
                 <div style={{
@@ -58,9 +43,13 @@ function StatePage() {
                   <Table bordered height="200">
                     <thead>
                       <tr>
-                        <th>Species' Order</th>
-                        <th>Park Name</th>
-                        <th>Number of Species</th>
+                        <th scope="col">Common Name</th>
+                        <th scope="col">Park Name</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Order</th>
+                        <th scope="col">Family</th>
+                        <th scope="col">Occurence</th>
+                        <th scope="col">Nativeness</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -72,9 +61,20 @@ function StatePage() {
             </Card>
           </Container>
         </div>
+        <p className="category">Species</p>
+
+        <Card>
+          <CardHeader>
+
+          </CardHeader>
+          <CardBody>
+            <img src={species} alt="species" />
+
+          </CardBody>
+        </Card>
       </div>
-    </div>
+    </div >
   );
 }
 
-export default StatePage;
+export default SpeciesPage;

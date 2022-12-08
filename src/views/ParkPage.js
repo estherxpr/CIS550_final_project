@@ -1,5 +1,5 @@
 import React from "react";
-
+import parks from "assets/img/parks3.jpg";
 // reactstrap components
 import {
 
@@ -11,9 +11,9 @@ import {
 } from "reactstrap";
 
 // core components
-import StatePageHeader from "components/StatesHeader.js";
+import ParkPageHeader from "components/ParkHeader.js";
 
-function StatePage() {
+function ParkPage() {
   React.useEffect(() => {
     document.body.classList.add("profile-page");
     document.body.classList.add("sidebar-collapse");
@@ -30,25 +30,11 @@ function StatePage() {
   return (
     <div>
       <div className="wrapper">
-        <StatePageHeader />
+        <ParkPageHeader />
         <div className="section">
-
           <Container>
             {/* parks define by state */}
             <h3 className="title">Parks</h3>
-            <Table bordered height="200">
-              <thead>
-                <tr>
-                  <th scope="col">Park Code</th>
-                  <th scope="col">Park Name</th>
-                  <th scope="col">Number of Species</th>
-                </tr>
-              </thead>
-              <tbody>
-
-              </tbody>
-            </Table>
-            <h3 className="title">Species Order Distribution</h3>
             <Card>
               <CardBody>
                 <div style={{
@@ -58,9 +44,9 @@ function StatePage() {
                   <Table bordered height="200">
                     <thead>
                       <tr>
-                        <th>Species' Order</th>
-                        <th>Park Name</th>
-                        <th>Number of Species</th>
+                        <th scope="col">Park Code</th>
+                        <th scope="col">Park Name</th>
+                        <th scope="col">Most Abundant Species</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -71,10 +57,16 @@ function StatePage() {
               </CardBody>
             </Card>
           </Container>
+          <p className="category">Parks</p>
+          <Card>
+            <CardBody>
+              <img src={parks} alt="states" />
+            </CardBody>
+          </Card>
         </div>
       </div>
     </div>
   );
 }
 
-export default StatePage;
+export default ParkPage;

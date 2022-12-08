@@ -1,12 +1,12 @@
 import React from "react";
 
 // reactstrap components
-import { Container, UncontrolledDropdown,  DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import { Container, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Col, } from "reactstrap";
 
 // core components
 
 
-function ProfilePageHeader() {
+function StatePageHeader() {
   let pageHeader = React.createRef();
 
   React.useEffect(() => {
@@ -63,10 +63,10 @@ function ProfilePageHeader() {
               <h2>Species</h2>
             </div>
           </div>
-        </Container>
-      </div>
+        </Container >
+      </div >
     </>
   );
 }
 
-export default ProfilePageHeader;
+export default StatePageHeader;
