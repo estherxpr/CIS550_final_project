@@ -14,6 +14,9 @@ app.get('/', (req, res) => {
 });
 
 // Other API endpoints
+/*
+  get all parks in the database
+* */
 app.get('/parks', async (req, res) => {
   try {
     const results = await lib.getAllParks();
@@ -23,6 +26,9 @@ app.get('/parks', async (req, res) => {
   }
 });
 
+/*
+  get a specific park by park name or by park id
+* */
 app.get('/parks/:park', async (req, res) => {
   const { park } = req.params;
   try {
@@ -50,9 +56,10 @@ app.get('/species/:species', async (req, res) => {
 
     // Here my idea is we might want to return all the results to user,
     // so concat two arrays
-    const result1 = await lib.getSpeciesByName(species);
-    const result2 = await lib.getSpeciesBySName(species);
-    const result = [...result1, ...result2];
+
+    const result = await lib.getSpeciesByName(species);
+    // const result2 = await lib.getSpeciesBySName(species);
+    // const result = [...result1, ...result2];
     // }
     res.status(200).json({ data: result });
   } catch (err) {
@@ -60,81 +67,42 @@ app.get('/species/:species', async (req, res) => {
   }
 });
 
-app.get('/species/:park/:family/:order/species',  async (req, res) => {
+/*
+  This endpoint is used to get filtered species by query
+* */
+app.get('/species', async (req, res) => {
+  const args = req.query;
+  // important: for the safety concern, actually we should check if the keys are valid
+  // but for now, we just assume the keys are valid
   try {
-    const { park, family, order } = req.params;
-    const result = await lib.getFilteredSpecies(park, family, order);
-    // }
+    const result = await lib.getSpeciesByFilter(args);
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
 });
 
-app.get('/species/:abundance/abundance',  async (req, res) => {
-  try {
-    const { abundance } = req.params;
-    const result = await lib.getSpeciesByAbundance(abundance);
-    // }
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
+// app.get('/species/:park/:family/:order', async (req, res) => {
+//   try {
+//     const { park, family, order } = req.params;
+//     const result = await lib.getFilteredSpecies(park, family, order);
 
-app.get('/species/:park/park',  async (req, res) => {
-  try {
-    const { park } = req.params;
-    const result = await lib.getSpeciesByParkName(park);
-    // }
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
+//     res.status(200).json({ data: result });
+//   } catch (err) {
+//     res.status(404).json({ error: err.message });
+//   }
+// });
 
-app.get('/species/:category/category',  async (req, res) => {
-  try {
-    const { park } = req.params;
-    const result = await lib.getSpeciesByCategory(category);
-    // }
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
-app.get('/species/sameCountry',  async (req, res) => {
-  try {
-    const result = await lib.getSpeciesSameCountry();
-    // }
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
-app.get('/species/:state/abundanceByState',  async (req, res) => {
-  try {
-    const { state } = req.params;
-    const result = await lib.getSpeciesAbundanceByState(state);
-    // }
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
-app.get('/species/:category/:state1/:state2/:state3/speciesBySpecificState',  async (req, res) => {
-  try {
-    const { category, state1, state2, state3 } = req.params;
-    const result = await lib.getSpeciesBySpecificState(category, state1, state2, state3);
-    // }
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
+// app.get('/species/park/:park', async (req, res) => {
+//   try {
+//     const { park } = req.params;
+//     const result = await lib.getSpeciesByParkName(park);
+//     // }
+//     res.status(200).json({ data: result });
+//   } catch (err) {
+//     res.status(404).json({ error: err.message });
+//   }
+// });
 
 app.get('/trades/:species', async (req, res) => {
   try {
@@ -204,40 +172,25 @@ app.get('/states/:state/fires', async (req, res) => {
 // we probably can use higher order function to handle this
 // it is like a tree structure, each node indicate a filter or a operation
 // search/parks indicates that we are searching results for parks
-app.get('/search/parks?', async (req, res) => {
+
+app.get('/search/parks', async (req, res) => {
   // here using keyword to switch, and use expectedFiled to select the field we want to search
   // every single query can be a list, connected by #
   const {
-    keyword, expectedFiled,
-    isExpectedFiledUnique,
-    groupBy,
-    orderBy,
-    limit,
-    percent,
-    fireClass,
+    keyword, args,
   } = req.query;
-  if (!keyword || !expectedFiled) {
+  if (!keyword) {
     res.status(400).json({ error: 'Please provide a keyword or park name' });
   }
+
   try {
     switch (keyword) {
       case 'fireSuffer': { // this correlated to query 8
-        const args = {
-          percent,
-          orderBy,
-          expectedFiled,
-          isExpectedFiledUnique,
-          limit,
-          groupBy,
-        };
         const result = await lib.getParksByFireSuffer(args);
         res.status(200).json({ data: result });
         return;
       }
       case ('fireClass'): { // this correlated to query 5
-        const args = {
-          fireClass, orderBy, expectedFiled, limit, isExpectedFiledUnique, groupBy,
-        };
         const result = await lib.getParksByFireClass(args);
         res.status(200).json({ data: result });
         return;
@@ -253,6 +206,48 @@ app.get('/search/parks?', async (req, res) => {
   }
 });
 
+app.get('/search/species', async (req, res) => {
+  const {
+    keyword, ...args
+  } = req.query;
+
+  try {
+    // const result = await lib.getSpeciesBySpecificState(category, state1, state2, states);
+    // we can also add some pagination here
+    let result;
+    // by default, we will parese args(which is an object) into dbFunction
+    switch (keyword) {
+      case 'orderDistribution': {
+        result = await lib.getOrderListInState(args);
+        break;
+      }
+      case 'aboundanceByState': {
+        result = await lib.getSpeciesAbundanceByState(args); // args: state
+        break;
+      }
+      case 'sameCountry': {
+        result = await lib.getSpeciesSameCountry(args); // non args
+        break;
+      }
+      case 'sameFamily': {
+        result = await lib.getFilteredSpecies(args); // args: (park, family, order);
+        break;
+      }
+      case 'threeStates': {
+        result = await lib.getSpeciesBySpecificState(args);
+        // args: category, in_state1, in_state2, not_in_state3,
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
 app.get('/orders/:state', async (req, res) => {
   const { state } = req.params;
   try {
@@ -262,6 +257,33 @@ app.get('/orders/:state', async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 });
+
+//  not a good way to define rest api
+// Route10: /species/:category/:state1/:state2/:state3/speciesBySpecificState
+// Description: Return all Species in certain category live in some state but not some other
+//                     state without severe fire
+// Route Parameter(s)  :   category, state1, state2, state3
+// Query Parameter(s)  :   None
+// Route Handler  :  getSpeciesBySpecificState(category, state1, state2, state3)
+// Return Type  : JSON
+// Return Parameters  : {Scientific_Name(String), Park_Name(String)}
+// Expected (Output) Behavior  :
+// Case 1:
+// Return all Species in certain category live in some state but not some other
+//                         state without severe fire
+
+// app.get('/species/:category/:state1/:state2/:state3/speciesBySpecificState', async (req, res) => {
+//   try {
+//     const {
+//       category, state1, state2, state3,
+//     } = req.params;
+//     const result = await lib.getSpeciesBySpecificState(category, state1, state2, state3);
+//     // }
+//     res.status(200).json({ data: result });
+//   } catch (err) {
+//     res.status(404).json({ error: err.message });
+//   }
+// });
 
 // Default response for any other request
 app.all((req, res) => {
