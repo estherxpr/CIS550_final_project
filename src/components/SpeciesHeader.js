@@ -18,7 +18,7 @@ import {
 // core components
 
 
-function SpeciesPageHeader() {
+function SpeciesPageHeader(props) {
   let pageHeader = React.createRef();
   const [firstFocus, setFirstFocus] = React.useState(false);
 
@@ -44,7 +44,7 @@ function SpeciesPageHeader() {
         <div
           className="page-header-image"
           style={{
-            backgroundImage: "url(" + require("assets/img/parks.jpg") + ")"
+            backgroundImage: "url(" + require("assets/img/animal_collage.jpg") + ")"
           }}
           ref={pageHeader}
         ></div>
@@ -52,7 +52,7 @@ function SpeciesPageHeader() {
           {/* <div className="photo-container">
             <img alt="..." src={require("assets/img/ryan.jpg")}></img>
           </div> */}
-          <h3 className="title">Species</h3>
+          <h3 className="title">{props.speciesName}</h3>
           {/* <Dropdown group isOpen={this.state.dropdownOpen} size="sm" toggle={this.toggle}> */}
           <Row>
             <Col>
@@ -62,7 +62,7 @@ function SpeciesPageHeader() {
                 }
               >
                 <Input
-                  placeholder="Search By Species Name"
+                  placeholder="Search By Park Name"
                   type="text"
                   onFocus={() => setFirstFocus(true)}
                   onBlur={() => setFirstFocus(false)}
@@ -79,44 +79,24 @@ function SpeciesPageHeader() {
             <Col lg="2" sm="6">
               <UncontrolledDropdown>
                 <DropdownToggle caret>
-                  State
+                  ConservationLevel
                 </DropdownToggle>
                 <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
-                  <DropdownItem>A</DropdownItem>
-                  <DropdownItem>B</DropdownItem>
-                  <DropdownItem>C</DropdownItem>
-                  <DropdownItem>D</DropdownItem>
+                  <DropdownItem>Extinct</DropdownItem>
+                  <DropdownItem>Endangered</DropdownItem>
+				  <DropdownItem>Threatened</DropdownItem>
+                  <DropdownItem>Species of Concern</DropdownItem>
+                  <DropdownItem>Proposed Threatened</DropdownItem>
+                  <DropdownItem>Proposed Endangered</DropdownItem>
+                  <DropdownItem>not evaluated</DropdownItem>
+				  <DropdownItem>Resident</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Col>
             <Col lg="2" sm="6">
               <UncontrolledDropdown>
                 <DropdownToggle caret>
-                  Park
-                </DropdownToggle>
-                <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
-                  <DropdownItem>A</DropdownItem>
-                  <DropdownItem>B</DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </Col>
-            <Col lg="2" sm="6">
-              <UncontrolledDropdown>
-                <DropdownToggle caret>
-                  FireLevel
-                </DropdownToggle>
-                <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
-                  <DropdownItem>A</DropdownItem>
-                  <DropdownItem>B</DropdownItem>
-                  <DropdownItem>C</DropdownItem>
-                  <DropdownItem>D</DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </Col>
-            <Col lg="2" sm="6">
-              <UncontrolledDropdown>
-                <DropdownToggle caret>
-                  Being Wild Traded
+                  Involved in Wild Trade
                 </DropdownToggle>
                 <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
                   <DropdownItem>Yes</DropdownItem>
@@ -145,4 +125,4 @@ function SpeciesPageHeader() {
   );
 }
 
-export default SpeciesPageHeader;
+export default ParkPageHeader;
