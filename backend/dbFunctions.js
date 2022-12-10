@@ -2,6 +2,20 @@ const mysql = require('mysql2/promise');
 
 let mySQLConnection;
 
+const validSpeciesFileds = new Map(
+  [['species_id', 'species_ID'],
+    ['occr_id', 'Occr_ID'],
+    ['park_id', 'Park_ID'], ['scientific_name', 'Scientific_Name'],
+    ['park_name', 'Park_Name'], ['occurrence', 'Occurrence'],
+    ['abundance', 'Abundance'], ['seasonality', 'Seasonality'], ['family', 'Family'],
+    ['conservation_status', 'Conservation_Status'],
+    ['speciesOrder', 'SpeciesOrder'],
+    ['order', 'Order'], ['category', 'Category'], ['common_names', 'Common_Names'],
+    ['nativeness', 'Nativeness'],
+    ['appendix', 'Appendix'], ['genus', 'Genus'],
+  ],
+);
+
 // Connect to our db on the cloud
 const connect = async () => {
   try {
@@ -114,39 +128,49 @@ const getAllStates = async () => {
   }
 };
 
+const getAllSpecies = async () => {
+  try {
+    const db = await getDB();
+    const query = 'SELECT * FROM Species';
+    const [rows] = await db.execute(query);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
 const getSpeciesByFilter = async (args) => {
   let subQuery = 'WHERE ';
   const keys = Object.keys(args);
-
-  // here we assuming all the keys are valid
-
-  // for (const value of keys) {
-  //   subQuery += `${key} = ${value} AND `;
-  // }
   for (let i = 0; i < keys.length; i += 1) {
-    const key = keys[i];
+    const key = keys[i].toLowerCase();
     const value = args[key];
-    if (i === keys.length - 1) {
-      subQuery += `${key} = '${value}'`;
-    } else {
-      subQuery += `${key} = '${value}' AND `;
+    if (validSpeciesFileds.has(key)) {
+      const field = validSpeciesFileds.get(key);
+      let q = `${field} = '${value}'`;
+      if (field === 'Common_Names') {
+        q = `${field} LIKE '%${value}%'`;
+      }
+      if (i === keys.length - 1) {
+        subQuery += q;
+      } else {
+        subQuery += `${q} AND `;
+      }
     }
   }
-  // if we want to have species' all attributes, we need join some other tables
-  // we might create a view or temp table to store the temporary species
-
   // here is the simple version, only take occurrence's attributes
-  const query = `SELECT * FROM Occurrence ${subQuery}`;
-  console.log(query);
+
+  const query = `SELECT * FROM Species_complete ${subQuery};`;
+
   try {
     const db = await getDB();
     const params = [];
     const [rows] = await db.execute(query, params);
     return rows;
-    // return query;
   } catch (err) {
     console.log(`Error: ${err.message}`);
-    // throw new Error('Error executing the query');
+    throw new Error('Error executing the query');
   }
 };
 
@@ -169,41 +193,10 @@ const getSpeciesByName = async (name) => {
   try {
     const db = await getDB();
     const query = `
-    SELECT * FROM Occurrence O JOIN Species S ON O.Scientific_Name = S.Scientific_Name  
-                    WHERE Common_Names LIKE '%${name}%' OR S.Scientific_Name LIKE '%${name}%'`;
+    SELECT * FROM Species_complete   
+                    WHERE Common_Names LIKE '%${name}%' OR Scientific_Name LIKE '%${name}%'`;
     // const params = [name];
     const params = [];
-    const [rows] = await db.execute(query, params);
-    return rows;
-  } catch (err) {
-    console.log(`Error: ${err.message}`);
-    throw new Error('Error executing the query');
-  }
-};
-
-// get Species by name
-// log: I think we can just use one getSpeciesByName,
-// which it can provide exact search or fuzzy search
-
-// const getSpeciesBySName = async (s_name) => {
-//   try {
-//     const db = await getDB();
-//     const query = 'SELECT * FROM Occurrence WHERE Scientific_Name =  ?';
-//     const params = [s_name];
-//     const [rows] = await db.execute(query, params);
-//     return rows;
-//   } catch (err) {
-//     console.log(`Error: ${err.message}`);
-//     throw new Error('Error executing the query');
-//   }
-// };
-
-// get Species by abundance
-const getSpeciesByAbundance = async (abundance) => {
-  try {
-    const db = await getDB();
-    const query = 'SELECT * FROM Occurrence WHERE abundance =  ?';
-    const params = [abundance];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -229,26 +222,8 @@ const getSpeciesByParkName = async (parkname) => {
 const getTradesBySpecies = async (species) => {
   try {
     const db = await getDB();
-    const query = 'SELECT * FROM Wildlife_Trade WHERE Taxon = ?';
+    const query = 'SELECT * FROM TRADE WHERE Taxon = ?';
     const params = [species];
-    const [rows] = await db.execute(query, params);
-    return rows;
-  } catch (err) {
-    console.log(`Error: ${err.message}`);
-    throw new Error('Error executing the query');
-  }
-};
-
-// Queries in Milestone3
-// Query 2, select species by category
-const getSpeciesByCategory = async (category) => {
-  try {
-    const db = await getDB();
-    const query = `SELECT s.Scientific_Name as bird_name 
-                   FROM Species s left join  Family_Order FO on s.Family = FO.Family 
-                   left join Order_Category OC on FO.SpeciesOrder = OC.SpeciesOrder 
-                   WHERE OC.Category = ? `;
-    const params = [category];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -388,7 +363,7 @@ const getOrderListInState = async (args) => {
   const { state } = args;
   try {
     const db = await getDB();
-    const query = ' SELECT FO.SpeciesOrder, O.Park_Name, COUNT(*) AS NUM\
+    const query = 'SELECT FO.SpeciesOrder, O.Park_Name, COUNT(*) AS NUM\
 					FROM Occurrence O JOIN Species S ON O.Scientific_Name = S.Scientific_Name\
 						JOIN Family_Order FO ON FO.Family = S.Family\
 					WHERE O.Park_Name IN (\
@@ -404,30 +379,32 @@ const getOrderListInState = async (args) => {
   }
 };
 
-// Query10: Find all Species in certain category live in some state but not some other state without severe fire
+/*
+  Find all Species in certain category
+  live in some state but not some other state without severe fire
+* */
+
 const getSpeciesBySpecificState = async (args) => {
   const {
-    category, in_state1, in_state2, not_in_state3,
+    category, state1, state2, state3,
   } = args;
   try {
     const db = await getDB();
-    const query = " WITH temp as (\
-					SELECT s.Scientific_Name, O.Park_Name\
-					FROM Species s left join  Family_Order FO on s.Family = FO.Family\
-					left join Order_Category OC on FO.SpeciesOrder = OC.SpeciesOrder\
-					join Occurrence O on s.Scientific_Name = O.Scientific_Name\
-					WHERE OC.Category = ?\
-					)\
-					SELECT temp.Scientific_Name, temp.Park_Name\
-					FROM temp join National_Park on temp.Park_Name = National_Park.Name\
-						join Wild_fire Wf on National_Park.State = Wf.STATE\
-					WHERE Park_Name in (SELECT Name FROM National_Park np WHERE np.State = ? or np.State = ? )\
-					AND Wf.FIRE_SIZE != 'A'\
-					AND temp.Scientific_Name not in (\
-					SELECT Scientific_Name\
-					FROM temp\
-					WHERE temp.Park_Name in (SELECT Name FROM National_Park np WHERE np.State = ?));";
-    const params = [category, in_state1, in_state2, not_in_state3];
+    const query = `WITH temp as (
+        SELECT s.Scientific_Name, O.Park_Name
+        FROM Species s left join  Family_Order FO on s.Family = FO.Family
+        left join Order_Category OC on FO.SpeciesOrder = OC.SpeciesOrder
+        join Occurrence O on s.Scientific_Name = O.Scientific_Name
+        WHERE OC.Category = ?)
+        SELECT temp.Scientific_Name, temp.Park_Name
+        FROM temp join National_Park on temp.Park_Name = National_Park.Name
+        JOIN Wild_fire Wf on National_Park.State = Wf.STATE
+        WHERE Park_Name in (SELECT Name FROM National_Park np WHERE np.State = ? or np.State = ? ) 
+        AND Wf.FIRE_SIZE != 'A'
+        AND temp.Scientific_Name not in (
+          SELECT Scientific_Name FROM temp
+        WHERE temp.Park_Name in (SELECT Name FROM National_Park np WHERE np.State = ?));`;
+    const params = [category, state1, state2, state3];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -453,10 +430,8 @@ module.exports = {
   getParksByState,
   getFiresByState,
   getSpeciesByName,
-  // getSpeciesBySName,
-  getSpeciesByAbundance,
+  getAllSpecies,
   getSpeciesByParkName,
-  getSpeciesByCategory,
   getSpeciesSameCountry,
   getSpeciesByState,
   getSpeciesAbundanceByState,

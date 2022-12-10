@@ -8,12 +8,20 @@ app.use(cors({ credentials: true, origin: ['http://localhost:3000'] }));
 app.use(express.urlencoded({ extended: true }), express.json());
 const lib = require('./dbFunctions');
 
-// Root endpoint
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to CIS550 Project' });
 });
 
-// Other API endpoints
+/*
+  for this server, we have four main endpoints: states, parks, species, trades, and search
+
+  for every response, we will return a json object with two keys: data or error,
+  if the request is successful, we will return data, otherwise, we will return error
+  data can be an array if the request is for a collection
+  or an object if the request is for a specific item
+  error will be a string, which contains the error message
+* */
+
 /*
   get all parks in the database
 * */
@@ -28,6 +36,19 @@ app.get('/parks', async (req, res) => {
 
 /*
   get a specific park by park name or by park id
+  @param park: park name or park id
+  @return: a json object with two keys: data or error
+  example:
+  {
+    "data": {
+    "Code": "BADL",
+    "Name": "Badlands National Park",
+    "State": "SD",
+    "Acres": 242756,
+    "Latitude": "43.75",
+    "Longitude": "-102.50"
+    }
+  }
 * */
 app.get('/parks/:park', async (req, res) => {
   const { park } = req.params;
@@ -44,29 +65,6 @@ app.get('/parks/:park', async (req, res) => {
   }
 });
 
-app.get('/species/:species', async (req, res) => {
-  try {
-    const { species } = req.params;
-    // let result;
-    // check if argument species is the species Id or the species name
-    // if (species.length === 9 && !Number.isNaN(parseInt(species.substring(5, 9), 10))) {
-    //   result = await lib.getSpeciesByCode(species);
-    //   // seems we do not have species Id in the database
-    // } else {
-
-    // Here my idea is we might want to return all the results to user,
-    // so concat two arrays
-
-    const result = await lib.getSpeciesByName(species);
-    // const result2 = await lib.getSpeciesBySName(species);
-    // const result = [...result1, ...result2];
-    // }
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
 /*
   This endpoint is used to get filtered species by query
 * */
@@ -75,6 +73,11 @@ app.get('/species', async (req, res) => {
   // important: for the safety concern, actually we should check if the keys are valid
   // but for now, we just assume the keys are valid
   try {
+    if (args === undefined || Object.keys(args).length === 0) {
+      const result = await lib.getAllSpecies();
+      res.status(200).json({ data: result });
+      return;
+    }
     const result = await lib.getSpeciesByFilter(args);
     res.status(200).json({ data: result });
   } catch (err) {
@@ -82,27 +85,22 @@ app.get('/species', async (req, res) => {
   }
 });
 
-// app.get('/species/:park/:family/:order', async (req, res) => {
-//   try {
-//     const { park, family, order } = req.params;
-//     const result = await lib.getFilteredSpecies(park, family, order);
+/*
+  get a specific species by species name or by species id
+  @param species: species name or species id
+  @return: a json object with two keys: data or error
+  example:
 
-//     res.status(200).json({ data: result });
-//   } catch (err) {
-//     res.status(404).json({ error: err.message });
-//   }
-// });
-
-// app.get('/species/park/:park', async (req, res) => {
-//   try {
-//     const { park } = req.params;
-//     const result = await lib.getSpeciesByParkName(park);
-//     // }
-//     res.status(200).json({ data: result });
-//   } catch (err) {
-//     res.status(404).json({ error: err.message });
-//   }
-// });
+* */
+app.get('/species/:species', async (req, res) => {
+  try {
+    const { species } = req.params;
+    const result = await lib.getSpeciesByName(species);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
 
 app.get('/trades/:species', async (req, res) => {
   try {
@@ -233,6 +231,8 @@ app.get('/search/species', async (req, res) => {
         result = await lib.getFilteredSpecies(args); // args: (park, family, order);
         break;
       }
+      // Return all Species in certain category live in some state but not some other
+      // state without severe fire
       case 'threeStates': {
         result = await lib.getSpeciesBySpecificState(args);
         // args: category, in_state1, in_state2, not_in_state3,
@@ -257,33 +257,6 @@ app.get('/orders/:state', async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 });
-
-//  not a good way to define rest api
-// Route10: /species/:category/:state1/:state2/:state3/speciesBySpecificState
-// Description: Return all Species in certain category live in some state but not some other
-//                     state without severe fire
-// Route Parameter(s)  :   category, state1, state2, state3
-// Query Parameter(s)  :   None
-// Route Handler  :  getSpeciesBySpecificState(category, state1, state2, state3)
-// Return Type  : JSON
-// Return Parameters  : {Scientific_Name(String), Park_Name(String)}
-// Expected (Output) Behavior  :
-// Case 1:
-// Return all Species in certain category live in some state but not some other
-//                         state without severe fire
-
-// app.get('/species/:category/:state1/:state2/:state3/speciesBySpecificState', async (req, res) => {
-//   try {
-//     const {
-//       category, state1, state2, state3,
-//     } = req.params;
-//     const result = await lib.getSpeciesBySpecificState(category, state1, state2, state3);
-//     // }
-//     res.status(200).json({ data: result });
-//   } catch (err) {
-//     res.status(404).json({ error: err.message });
-//   }
-// });
 
 // Default response for any other request
 app.all((req, res) => {
