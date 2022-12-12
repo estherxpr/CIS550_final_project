@@ -65,6 +65,21 @@ app.get('/parks/:park', async (req, res) => {
   }
 });
 
+
+app.get('/parks/:park/species', async (req, res) => {
+  const { park } = req.params;
+  try {
+    const result = await lib.getSpeciesByParkName(park);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+
+});
+
+
+
+
 /*
   This endpoint is used to get filtered species by query
 * */
@@ -78,6 +93,7 @@ app.get('/species', async (req, res) => {
       res.status(200).json({ data: result });
       return;
     }
+
     const result = await lib.getSpeciesByFilter(args);
     res.status(200).json({ data: result });
   } catch (err) {
@@ -144,9 +160,9 @@ app.get('/states/:state/parks', async (req, res) => {
 });
 
 app.get('/states/:state/species', async (req, res) => {
-  const { state } = req.params;
+  const args = req.params;
   try {
-    const result = await lib.getSpeciesByState(state);
+    const result = await lib.getSpeciesByState(args);
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ error: err.message });
@@ -208,7 +224,7 @@ app.get('/search/species', async (req, res) => {
   const {
     keyword, ...args
   } = req.query;
-
+  console.log(req.query);
   try {
     // const result = await lib.getSpeciesBySpecificState(category, state1, state2, states);
     // we can also add some pagination here
@@ -239,7 +255,8 @@ app.get('/search/species', async (req, res) => {
         break;
       }
       default: {
-        break;
+        res.status(404).json({ message: 'No such keyword' });
+        return;
       }
     }
     res.status(200).json({ data: result });

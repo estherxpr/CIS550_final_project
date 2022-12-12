@@ -143,10 +143,11 @@ const getAllSpecies = async () => {
 const getSpeciesByFilter = async (args) => {
   let subQuery = 'WHERE ';
   const keys = Object.keys(args);
+
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i].toLowerCase();
-    const value = args[key];
     if (validSpeciesFileds.has(key)) {
+      const value = args[validSpeciesFileds.get(key)];
       const field = validSpeciesFileds.get(key);
       let q = `${field} = '${value}'`;
       if (field === 'Common_Names') {
@@ -162,11 +163,11 @@ const getSpeciesByFilter = async (args) => {
   // here is the simple version, only take occurrence's attributes
 
   const query = `SELECT * FROM Species_complete ${subQuery};`;
-
+  console.log("query:", query);
   try {
     const db = await getDB();
     const params = [];
-    const [rows] = await db.execute(query, params);
+    const [rows] = await db.execute(query);
     return rows;
   } catch (err) {
     console.log(`Error: ${err.message}`);
@@ -251,20 +252,42 @@ const getSpeciesSameCountry = async () => {
 // Query 4, Select all animals living in CA’s national park
 const getSpeciesByState = async (args) => {
   const { state } = args;
-  try {
+
+    try {
     const db = await getDB();
-    const query = `SELECT o.Scientific_Name as CA_animal 
-                  FROM Occurrence o 
-                  WHERE o.Park_Name in 
-                  (SELECT Name FROM National_Park np WHERE np.State = ? )`;
-    const params = [state];
-    const [rows] = await db.execute(query, params);
+    const query = `SELECT DISTINCT o.Scientific_Name as species 
+                  FROM Occurrence o JOIN National_Park np ON 
+                  o.Park_ID = np.Code WHERE np.State LIKE '%${state}%';`;
+    // const params = [state];
+    const params = [];
+    const [rows] = await db.execute(query,params);
     return rows;
   } catch (err) {
     console.log(`Error: ${err.message}`);
     throw new Error('Error executing the query');
   }
 };
+
+
+// const getSpeciesNumByState = async (args) => {
+//   const { state } = args;
+//   console.log(state);
+//     try {
+//     const db = await getDB();
+//     const query = `SELECT COUNT (DISTINCT o.Scientific_Name) as num 
+//                   FROM Occurrence o JOIN National_Park np ON 
+//                   o.Park_ID = np.Code WHERE np.State LIKE '%${state}%';`;
+//     // const params = [state];
+//     const params = [];
+//     const [rows] = await db.execute(query,params);
+//     return rows;
+//   } catch (err) {
+//     console.log(`Error: ${err.message}`);
+//     throw new Error('Error executing the query');
+//   }
+// };
+
+
 
 // Query5: Select all parks that in a state that has fire of class A
 const getParksByFireClass = async (args) => {
@@ -290,9 +313,10 @@ const getSpeciesAbundanceByState = async (args) => {
   const { state } = args;
   try {
     const db = await getDB();
-    const query = `SELECT COUNT(DISTINCT O.Scientific_Name) AS SPECIES_NUM  
-                  FROM Occurrence O WHERE O.Park_Name IN 
-                  (SELECT NP.Name FROM National_Park NP WHERE NP.state = ? ) `;
+    const query = `SELECT O.Park_Name, O.Park_ID, COUNT(DISTINCT O.Scientific_Name) AS SPECIES_NUM
+    FROM Occurrence O WHERE O.Park_Name IN
+    (SELECT NP.Name FROM National_Park NP WHERE NP.state = ? )
+    GROUP BY O.Park_Name;`;
     const params = [state];
     const [rows] = await db.execute(query, params);
     return rows;
@@ -360,18 +384,20 @@ const getParksByFireSuffer = async (args) => {
 
 // Query9: Find all Species Order distribution in different parks in a State
 const getOrderListInState = async (args) => {
+  console.log(args);
   const { state } = args;
   try {
     const db = await getDB();
-    const query = 'SELECT FO.SpeciesOrder, O.Park_Name, COUNT(*) AS NUM\
-					FROM Occurrence O JOIN Species S ON O.Scientific_Name = S.Scientific_Name\
-						JOIN Family_Order FO ON FO.Family = S.Family\
-					WHERE O.Park_Name IN (\
-					SELECT NP.Name FROM National_Park NP WHERE NP.state = ?)\
-					GROUP BY FO.SpeciesOrder, O.Park_Name\
-					ORDER BY NUM DESC';
-    const params = [state];
-    const [rows] = await db.execute(query, params);
+    const query = `SELECT FO.SpeciesOrder, O.Park_Name, COUNT(*) AS NUM
+					FROM Occurrence O JOIN Species S ON O.Scientific_Name = S.Scientific_Name
+						JOIN Family_Order FO ON FO.Family = S.Family
+					WHERE O.Park_Name IN (
+					SELECT NP.Name FROM National_Park NP WHERE NP.state = '${state}')
+					GROUP BY FO.SpeciesOrder, O.Park_Name
+					ORDER BY NUM DESC`;
+    
+    // const params = [state];
+    const [rows] = await db.execute(query);
     return rows;
   } catch (err) {
     console.log(`Error: ${err.message}`);
