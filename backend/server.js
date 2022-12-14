@@ -111,7 +111,7 @@ app.get('/species/:species', async (req, res) => {
   try {
     const { species } = req.params;
     const result = await lib.getSpeciesByName(species);
-    
+
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ error: err.message });
@@ -139,15 +139,15 @@ app.get('/states', async (req, res) => {
 });
 
 // get a specific state general info
-app.get('/states/:state', async (req, res) => {
-  const { state } = req.params;
-  try {
-    const result = await lib.getStateByName(state);
-    res.status(200).json({ data: result });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
+// app.get('/states/:state', async (req, res) => {
+//   const { state } = req.params;
+//   try {
+//     const result = await lib.getStateByName(state);
+//     res.status(200).json({ data: result });
+//   } catch (err) {
+//     res.status(404).json({ error: err.message });
+//   }
+// });
 
 app.get('/states/:state/parks', async (req, res) => {
   const { state } = req.params;
@@ -171,6 +171,7 @@ app.get('/states/:state/species', async (req, res) => {
 
 app.get('/states/:state/fires', async (req, res) => {
   const { state } = req.params;
+  console.log(state)
   try {
     const result = await lib.getFiresByState(state);
     res.status(200).json({ data: result });
@@ -265,28 +266,63 @@ app.get('/search/species', async (req, res) => {
   }
 });
 
-app.get('/orders/:state', async (req, res) => {
-  const { state } = req.params;
+// app.get('/orders/:state', async (req, res) => {
+//   const { state } = req.params;
+//   try {
+//     const result = await lib.getOrderListInState(state);
+//     res.status(200).json({ data: result });
+//   } catch (err) {
+//     res.status(404).json({ error: err.message });
+//   }
+// });
+
+
+// app.get('/categories')
+app.get('/category', async (req, res) => {
   try {
-    const result = await lib.getOrderListInState(state);
+    const results = await lib.getAllCategories();
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// app.get('categories/:category/order')
+app.get('/category/:category/order/', async (req, res) => {
+  const { category } = req.params;
+  console.log(req.params)
+  try {
+    const result = await lib.getOrdersByCategory(category);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+// app.get('orders/:order/family')
+app.get('/order/:order/family', async (req, res) => {
+  const { order } = req.params;
+  try {
+    const result = await lib.getFamiliesbyOrder(order);
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
 });
 
-
-// app.get('/categories')
-
-// app.get('categories/:category/order')
-
-// app.get('orders/:order/family')
-
 // app.get('families/:family/species
-
+app.get('/family/:family/species', async (req, res) => {
+  const { family } = req.params;
+  try {
+    const result = await lib.getSpeciesbyFamily(family);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
 // Default response for any other request
 app.all((req, res) => {
   res.status(404);
 });
+
 
 module.exports = app; // for testing

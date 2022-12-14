@@ -4,15 +4,15 @@ let mySQLConnection;
 
 const validSpeciesFileds = new Map(
   [['species_id', 'species_ID'],
-    ['occr_id', 'Occr_ID'],
-    ['park_id', 'Park_ID'], ['scientific_name', 'Scientific_Name'],
-    ['park_name', 'Park_Name'], ['occurrence', 'Occurrence'],
-    ['abundance', 'Abundance'], ['seasonality', 'Seasonality'], ['family', 'Family'],
-    ['conservation_status', 'Conservation_Status'],
-    ['speciesOrder', 'SpeciesOrder'],
-    ['order', 'Order'], ['category', 'Category'], ['common_names', 'Common_Names'],
-    ['nativeness', 'Nativeness'],
-    ['appendix', 'Appendix'], ['genus', 'Genus'],
+  ['occr_id', 'Occr_ID'],
+  ['park_id', 'Park_ID'], ['scientific_name', 'Scientific_Name'],
+  ['park_name', 'Park_Name'], ['occurrence', 'Occurrence'],
+  ['abundance', 'Abundance'], ['seasonality', 'Seasonality'], ['family', 'Family'],
+  ['conservation_status', 'Conservation_Status'],
+  ['speciesOrder', 'SpeciesOrder'],
+  ['order', 'Order'], ['category', 'Category'], ['common_names', 'Common_Names'],
+  ['nativeness', 'Nativeness'],
+  ['appendix', 'Appendix'], ['genus', 'Genus'],
   ],
 );
 
@@ -119,7 +119,7 @@ const getFiresByState = async (state) => {
 const getAllStates = async () => {
   try {
     const db = await getDB();
-    const query = 'SELECT * FROM State';
+    const query = 'SELECT distinct state FROM National_Park';
     const [rows] = await db.execute(query);
     return rows;
   } catch (err) {
@@ -175,19 +175,19 @@ const getSpeciesByFilter = async (args) => {
   }
 };
 
-// get state by name
-const getStateByName = async (state) => {
-  try {
-    const db = await getDB();
-    const query = '';
-    const params = [state];
-    const [rows] = await db.execute(query, params);
-    return rows;
-  } catch (err) {
-    console.log(`Error: ${err.message}`);
-    throw new Error('Error executing the query');
-  }
-};
+// // get state by name
+// const getStateByName = async (state) => {
+//   try {
+//     const db = await getDB();
+//     const query = '';
+//     const params = [state];
+//     const [rows] = await db.execute(query, params);
+//     return rows;
+//   } catch (err) {
+//     console.log(`Error: ${err.message}`);
+//     throw new Error('Error executing the query');
+//   }
+// };
 
 // get Species by common_name
 const getSpeciesByName = async (name) => {
@@ -253,14 +253,14 @@ const getSpeciesSameCountry = async () => {
 const getSpeciesByState = async (args) => {
   const { state } = args;
 
-    try {
+  try {
     const db = await getDB();
     const query = `SELECT DISTINCT o.Scientific_Name as species 
                   FROM Occurrence o JOIN National_Park np ON 
                   o.Park_ID = np.Code WHERE np.State LIKE '%${state}%';`;
     // const params = [state];
     const params = [];
-    const [rows] = await db.execute(query,params);
+    const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
     console.log(`Error: ${err.message}`);
@@ -269,23 +269,6 @@ const getSpeciesByState = async (args) => {
 };
 
 
-// const getSpeciesNumByState = async (args) => {
-//   const { state } = args;
-//   console.log(state);
-//     try {
-//     const db = await getDB();
-//     const query = `SELECT COUNT (DISTINCT o.Scientific_Name) as num 
-//                   FROM Occurrence o JOIN National_Park np ON 
-//                   o.Park_ID = np.Code WHERE np.State LIKE '%${state}%';`;
-//     // const params = [state];
-//     const params = [];
-//     const [rows] = await db.execute(query,params);
-//     return rows;
-//   } catch (err) {
-//     console.log(`Error: ${err.message}`);
-//     throw new Error('Error executing the query');
-//   }
-// };
 
 
 
@@ -384,7 +367,6 @@ const getParksByFireSuffer = async (args) => {
 
 // Query9: Find all Species Order distribution in different parks in a State
 const getOrderListInState = async (args) => {
-  console.log(args);
   const { state } = args;
   try {
     const db = await getDB();
@@ -395,7 +377,7 @@ const getOrderListInState = async (args) => {
 					SELECT NP.Name FROM National_Park NP WHERE NP.state = '${state}')
 					GROUP BY FO.SpeciesOrder, O.Park_Name
 					ORDER BY NUM DESC`;
-    
+
     // const params = [state];
     const [rows] = await db.execute(query);
     return rows;
@@ -439,6 +421,75 @@ const getSpeciesBySpecificState = async (args) => {
   }
 };
 
+// get allcategories
+const getAllCategories = async () => {
+  try {
+    const db = await getDB();
+    const query = `SELECT distinct t.Category 
+                      FROM Order_Category t 
+                      WHERE Category != 'Category'
+                      ORDER BY Category ASC`;
+    const [rows] = await db.execute(query);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
+// get order by category
+const getOrdersByCategory = async (category) => {
+  try {
+    const db = await getDB();
+    // currently using like searching for state because some parks are located in multiple states
+    const query = `SELECT distinct t.SpeciesOrder
+                    FROM Order_Category t
+                    WHERE Category = '${category}' and SpeciesOrder != 'None'
+                    ORDER BY SpeciesOrder ASC;`
+    const params = [];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
+const getFamiliesbyOrder = async (order) => {
+  try {
+    const db = await getDB();
+    // currently using like searching for state because some parks are located in multiple states
+    const query = `SELECT distinct t.Family
+                  FROM Family_Order t
+                  WHERE SpeciesOrder = '${order}' and Family != 'None'
+                  ORDER BY Family ASC;`
+    const params = [];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
+
+const getSpeciesbyFamily = async (family) => {
+  try {
+    const db = await getDB();
+    // currently using like searching for state because some parks are located in multiple states
+    const query = `SELECT Distinct Common_Names
+                    FROM Species t
+                    WHERE Family = '${family}' and Common_Names != 'None'
+                    ORDER BY Common_Names ASC;`
+    const params = [];
+    const [rows] = await db.execute(query, params);
+    return rows;
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
+  }
+};
+
 module.exports = {
   connect,
   getDB,
@@ -446,7 +497,6 @@ module.exports = {
   getAllParks,
   getAllStates,
   getSpeciesByFilter,
-  getStateByName,
   getFilteredSpecies,
   getTradesBySpecies,
   getParkByName,
@@ -463,4 +513,8 @@ module.exports = {
   getSpeciesAbundanceByState,
   getSpeciesBySpecificState,
   getOrderListInState,
+  getAllCategories,
+  getOrdersByCategory,
+  getFamiliesbyOrder,
+  getSpeciesbyFamily
 };
