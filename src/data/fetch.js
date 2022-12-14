@@ -1,6 +1,32 @@
 import axios from 'axios';
 const url = 'http://localhost:8080';
 
+
+
+// export const getAllParks = async () => {
+//   try {
+//     const response = await axios.get(`${url}/parks`);
+//     if (!response.data.data) {
+//       return {};
+//     }
+//     return response.data.data;
+//   } catch (err) {
+//     return {};
+//   }
+// };
+
+export const getPark = async (param) => {
+  try {
+    const response = await axios.get(`${url}/parks/${param}`);
+    if (!response.data.data) {
+      return {};
+    }
+    return response.data.data;
+  } catch (err) {
+    return {};
+  }
+}; 
+
 export const getAllParks = async() =>{
   try{  
   const response = await axios.get(`${url}/parks`);

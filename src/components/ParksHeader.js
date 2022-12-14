@@ -17,7 +17,8 @@ import {
 
 // core components
 
-function ParkPageHeader(props) {
+
+function ParksPageHeader() {
   let pageHeader = React.createRef();
   const [firstFocus, setFirstFocus] = React.useState(false);
 
@@ -51,7 +52,7 @@ function ParkPageHeader(props) {
           {/* <div className="photo-container">
             <img alt="..." src={require("assets/img/ryan.jpg")}></img>
           </div> */}
-          <h3 className="title">{props.parkName}</h3>
+          <h3 className="title">Parks</h3>
           {/* <Dropdown group isOpen={this.state.dropdownOpen} size="sm" toggle={this.toggle}> */}
           <Row>
             <Col>
@@ -61,7 +62,7 @@ function ParkPageHeader(props) {
                 }
               >
                 <Input
-                  placeholder="Search By Species Name"
+                  placeholder="Search By Park Name"
                   type="text"
                   onFocus={() => setFirstFocus(true)}
                   onBlur={() => setFirstFocus(false)}
@@ -75,6 +76,30 @@ function ParkPageHeader(props) {
           <p className="category">Or</p>
           <p className="category">Search By Conditions</p>
           <Row>
+            <Col lg="2" sm="6">
+              <UncontrolledDropdown>
+                <DropdownToggle caret>
+                  State
+                </DropdownToggle>
+                <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
+                  <DropdownItem>A</DropdownItem>
+                  <DropdownItem>B</DropdownItem>
+                  <DropdownItem>C</DropdownItem>
+                  <DropdownItem>D</DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </Col>
+            <Col lg="2" sm="6">
+              <UncontrolledDropdown>
+                <DropdownToggle caret>
+                  Acre
+                </DropdownToggle>
+                <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
+                  <DropdownItem>Yes</DropdownItem>
+                  <DropdownItem>No</DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </Col>
             <Col lg="2" sm="6">
               <UncontrolledDropdown>
                 <DropdownToggle caret>
@@ -120,4 +145,4 @@ function ParkPageHeader(props) {
   );
 }
 
-export default ParkPageHeader;
+export default ParksPageHeader;

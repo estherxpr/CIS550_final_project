@@ -72,12 +72,16 @@ function IndexNavbar() {
                    states
                    {/* </NavLink> */}
                   </DropdownItem>
+                  
                   <DropdownItem to="/parks">
                   {/* <NavLink href="/states"> */}
+                  <Link to ="/parks">
                     <i className="now-ui-icons design_bullet-list-67 mr-1"></i>
-                    parks
+                    <div><b>parks</b> </div>
+                    </Link>
                     {/* </NavLink> */}
                   </DropdownItem>
+                 
                   <DropdownItem to="/species">
                   {/* <NavLink href="/states"> */}
                     <i className="now-ui-icons design_bullet-list-67 mr-1"></i>

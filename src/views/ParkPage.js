@@ -1,72 +1,92 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import parks from "assets/img/parks3.jpg";
+import ParksScroll from "components/ParksScroll";
+import { useParams } from 'react-router-dom';
+import { getPark } from "data/fetch";
+import IndexNavbar from "components/Navbar.js";
 // reactstrap components
 import {
-
   Container,
-
+  Col,
+  Row,
   Table,
   Card,
   CardBody,
 } from "reactstrap";
-
-// core components
-import ParkPageHeader from "components/ParkHeader.js";
+import ParkPageHeader from "components/ParkHeader";
 
 function ParkPage() {
-  React.useEffect(() => {
-    document.body.classList.add("profile-page");
-    document.body.classList.add("sidebar-collapse");
-    document.documentElement.classList.remove("nav-open");
-    window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
-    return function cleanup() {
-      document.body.classList.remove("profile-page");
-      document.body.classList.remove("sidebar-collapse");
-    };
-  }, []);
+    const parkName = useParams();
+    const [park, setPark] = useState([]);
+    const [imgSrc, setImgSrc] = useState([]);
+    const firstRendering = useRef(true);
+    const name = JSON.stringify(parkName.parkName).replace(/^"(.+(?="$))"$/, '$1');;
+    
+    useEffect(() => {
+      async function fetchData() {
+        try {
+          const data = await getPark(name);
+          setPark(data);
+        } catch (err) {
+          throw new Error(err.message);
+        }
+      }
+      if (firstRendering.current) {
+        firstRendering.current = false;
+        fetchData();
+      }
+    })
 
+    useEffect(() => {
+      async function fetchImg() {
+        try {          
+          const src = await require(`../assets/img/parks/${park.Code}.jpg`);
+          setImgSrc(src);
+        } catch (err) {
+          // throw new Error(err.message);
+        }
+      }
+      fetchImg();
+    }, [park])
 
-  return (
-    <div>
-      <div className="wrapper">
-        <ParkPageHeader />
-        <div className="section">
-          <Container>
-            {/* parks define by state */}
-            <h3 className="title">Parks</h3>
-            <Card>
-              <CardBody>
-                <div style={{
-                  maxHeight: '300px',
-                  overflowY: 'auto'
-                }}>
-                  <Table bordered height="200">
-                    <thead>
-                      <tr>
-                        <th scope="col">Park Code</th>
-                        <th scope="col">Park Name</th>
-                        <th scope="col">Most Abundant Species</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                  </Table>
-                </div>
-              </CardBody>
-            </Card>
-          </Container>
-          <p className="category">Parks</p>
-          <Card>
-            <CardBody>
-              <img src={parks} alt="states" />
-            </CardBody>
-          </Card>
+    return (
+      <div>
+        <IndexNavbar />
+        <div className="wrapper">
+          <ParkPageHeader {...parkName}/>
+          <div className="section">
+            <Container>
+                <Row>
+              <Col>
+                <Card>
+                    <CardBody>
+                        <h3 className="title">{name}</h3>
+                        <img src={imgSrc} alt={name} width = "500px" height="500px"></img>
+                    </CardBody>
+                </Card>
+              </Col>
+              <Col>
+                <Card>
+                    <CardBody>
+                        <h4 className="text">Acre: {park.Acres}</h4>
+                        <h4 className="text">State: {park.State}</h4>
+                        <h4 className="text">Latitude: {park.Latitude}</h4>
+                        <h4 className="text">Longitude: {park.Longitude}</h4>
+                        <h4 className="text">Threatened by 3 fires</h4>
+                        <h4 className="text">
+                            Top 10 Species: 张旻政，张旻政，张旻政，张旻政，张旻政，张旻政，
+                            张旻政，张旻政，张旻政，张旻政，张旻政，张旻政大傻逼来咬我吖儿砸
+                            </h4>
+                    </CardBody>
+                </Card>
+              </Col>
+              </Row>
+            </Container>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export default ParkPage;
+    );
+  }
+  
+  export default ParkPage;
+  
