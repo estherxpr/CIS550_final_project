@@ -4,7 +4,7 @@ import React,{useEffect, useState,  createRef} from "react";
 import { Container, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, } from "reactstrap";
 
 import { getSpeciesByState,getParksByState } from "data/fetch";
-
+import IndexNavbar from "components/Navbar.js";
 function StatePageHeader(props) {
   const {state, setState} = props;
   let pageHeader = createRef();
@@ -62,6 +62,7 @@ function StatePageHeader(props) {
 
   return (
     <div>
+      <IndexNavbar />
       <div
         className="page-header clear-filter page-header-small"
         filter-color="blue"

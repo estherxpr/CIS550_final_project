@@ -108,7 +108,6 @@ export const getSpeciesByParkName = async(name) =>{
 }
 
 
-
 export const getTradesBySpecies = async(name) =>{
   try{
     const response = await axios.get(`${url}/trades/${name}`);
@@ -186,7 +185,6 @@ export const getSpeciesDistributionByState = async(state) =>{
 
 
 
-
 export const getSpeciesByState = async(name) =>{
   try{
     const response = await axios.get(`${url}/states/${name}/species`);
@@ -239,3 +237,68 @@ export const searchSpecies = async(query) =>{
     }
 }
 
+
+export const getOrdersByCategory = async(category) =>{
+  try{
+    const response = await axios.get(`${url}/category/${category}/order`);
+    if(response.status === 200){
+      return response.data.data;
+    }
+    return [];
+  }catch(err){
+    console.log(err);
+    return [];
+  }
+}
+
+export const getFamilysByOrder = async(order) =>{
+  try{
+    const response = await axios.get(`${url}/order/${order}/family`);
+    if(response.status === 200){
+      return response.data.data;
+    }
+    return [];
+  }catch(err){
+    console.log(err);
+    return [];
+  }
+}
+
+export const getGenusByFamily = async(family) =>{
+  try{
+    const response = await axios.get(`${url}/family/${family}/genus`);
+    if(response.status === 200){
+      return response.data.data;
+    }
+    return [];
+  }catch(err){
+    console.log(err);
+    return [];
+  }
+}
+
+export const getSpeciesByGenus = async(genus) =>{
+  try{
+    const response = await axios.get(`${url}/genus/${genus}/species`);
+    if(response.status === 200){
+      return response.data.data;
+    }
+    return [];
+  }catch(err){
+    console.log(err);
+    return [];
+  }
+}
+
+// export const getSpeciesByFamily = async(genus) =>{
+//   try{
+//     const response = await axios.get(`${url}/genus/${genus}/species`);
+//     if(response.status === 200){
+//       return response.data.data;
+//     }
+//     return [];
+//   }catch(err){
+//     console.log(err);
+//     return [];
+//   }
+// }

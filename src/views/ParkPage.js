@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import parks from "assets/img/parks3.jpg";
-import ParksScroll from "components/ParksScroll";
+// import parks from "assets/img/parks3.jpg";
+// import ParksScroll from "components/ParksScroll";
 import { useParams } from 'react-router-dom';
 import { getPark } from "data/fetch";
 import IndexNavbar from "components/Navbar.js";
@@ -9,7 +9,7 @@ import {
   Container,
   Col,
   Row,
-  Table,
+
   Card,
   CardBody,
 } from "reactstrap";

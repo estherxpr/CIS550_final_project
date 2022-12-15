@@ -31,7 +31,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route,  Routes,  } from "react-router-dom";
 
 import "assets/css/bootstrap.min.css";
 import "assets/scss/now-ui-kit.scss?v=1.5.0";
@@ -47,17 +47,20 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-    <Switch>
-      <Switch>
-        <Route exact path="/states" render={(props) => <StatePage {...props} />} />
-        <Route exact path="/parks" render={(props) => <ParksPage {...props} />} />
-        <Route exact path="/parks/:parkName" render={(props) => <ParkPage {...props} />} />
-        <Route exact path="/species" render={(props) => <SpeciesAllPage {...props} />} />
-        <Route exact path="/species/:speciesName" render={(props) => <SpeciesPage {...props} />} />
-        <Route exact path="/" render={(props) => <HomePage {...props} />} />
-        <Redirect to="/" />
-        <Redirect from="/index" to="/" />
-      </Switch>
-    </Switch>
+    <div>
+    <Routes>
+
+        <Route exact path="/" element={<HomePage/>} />
+        <Route exact path="/states" element={ <StatePage/>} />
+        <Route exact path="/parks" element={ <ParksPage />} />
+        <Route exact path="/parks/:parkName" element={<ParkPage />} />
+        <Route exact path="/species" element={ <SpeciesAllPage />} />
+        <Route exact path="/species/:speciesName" element={<SpeciesPage/>} />
+      
+        {/* <Redirect to="/" />
+        <Redirect from="/index" to="/" /> */}
+
+    </Routes>
+    </div>
   </BrowserRouter>
 );

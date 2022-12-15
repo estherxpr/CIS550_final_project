@@ -8,7 +8,7 @@
     "react-d3-tree": "^3.4.2",
     "react-dom": ">=16.8.0",
     "react-responsive-carousel": "^3.2.23",
-    "react-router-dom": "5.2.0",
+    "react-router-dom": "6.4.5",
     "react-scripts": "5.0.1",
     "reactstrap": "8.9.0",
     "sass": "1.54.0"

@@ -67,21 +67,21 @@ function IndexNavbar() {
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem to="/states" >
-                    {/* <NavLink href="/states"> */}
+                    <NavLink href="/states">
                     <i className="now-ui-icons business_chart-pie-36 mr-1"></i>
-                   states
-                   {/* </NavLink> */}
+                      states
+                   </NavLink>
                   </DropdownItem>
                   
-                  <DropdownItem to="/parks">
+                  <DropdownItem >
                   {/* <NavLink href="/states"> */}
-                  <Link to ="/parks">
-                    <i className="now-ui-icons design_bullet-list-67 mr-1"></i>
-                    <div><b>parks</b> </div>
-                    </Link>
+                  <Link to ="/parks">parks</Link>
+                    {/* <i className="now-ui-icons design_bullet-list-67 mr-1"></i>
+                    <b>parks</b> */}
+             
                     {/* </NavLink> */}
                   </DropdownItem>
-                 
+                
                   <DropdownItem to="/species">
                   {/* <NavLink href="/states"> */}
                     <i className="now-ui-icons design_bullet-list-67 mr-1"></i>

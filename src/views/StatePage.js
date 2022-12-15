@@ -18,8 +18,8 @@ function ParksTable({parks}){
     parksRow = parks.map((park) => {
       return (
         <tr key={park.parkName}>
-          <td><Link to = {`parks/${park.parkCode}`} >{park.parkCode}</Link></td>
-          <td><Link to = {`parks/${park.parkCode}`} >{park.parkName}</Link></td>
+          <td><Link to = {`/parks/${park.parkCode}`} >{park.parkCode}</Link></td>
+          <td><Link to = {`/parks/${park.parkCode}`} >{park.parkName}</Link></td>
           <td>{park.speciesNumber}</td>
         </tr>
       );
@@ -43,8 +43,6 @@ function ParksTable({parks}){
     </div>
   )
 }
-
-
 
 
 function DistributionTable({state}){
@@ -72,7 +70,7 @@ function DistributionTable({state}){
       return (
         <tr key={order.SpeciesOrder + order.Park_Name}>
           <td>{order.SpeciesOrder}</td>
-          <td><Link to = {`parks/${order.Park_Name}`} >{order.Park_Name}</Link></td>
+          <td><Link to = {`/parks/${order.Park_Name}`} >{order.Park_Name}</Link></td>
           <td>{order.NUM}</td>
         </tr>
       );
@@ -106,8 +104,6 @@ function DistributionTable({state}){
     </div>
   )
 }
-
-
 
 
 
