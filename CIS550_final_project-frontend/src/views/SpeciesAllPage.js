@@ -11,6 +11,7 @@ import {
 
 // core components
 import SpeciesAllHeader from "components/SpeciesAllHeader.js";
+import { Link } from "react-router-dom";
 
 
 function SpeciesTable(props){
@@ -19,8 +20,10 @@ function SpeciesTable(props){
   if (speciesData && speciesData.length > 0) {
     speciesRow = speciesData.map((species) => {
       return (
-        <tr key={species.scientifc_Name}>
-          <td>{species.scientificName}</td>
+        <tr key={species.scientificName}>
+          <Link to={`/species/${species.scientificName}`}>
+            <td>{species.scientificName}</td>
+          </Link>
           <td>{species.commonName}</td>
           {/* <td>{species.category}</td>
           <td>{species.order}</td>

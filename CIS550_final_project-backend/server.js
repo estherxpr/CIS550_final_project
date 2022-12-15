@@ -273,8 +273,13 @@ app.get('/search/species', async (req, res) => {
         result = await lib.getSpeciesAbundanceByState(args); // args: state
         break;
       }
-      case 'sameCountry': {
+      case 'sameCountryTrade': {
         result = await lib.getSpeciesSameCountry(args); // non args
+        result = result.map((item) => (
+          {
+            scientificName: item.Taxon,
+            commonName: item.Common_Names,
+          }));
         break;
       }
       case 'sameFamily': {

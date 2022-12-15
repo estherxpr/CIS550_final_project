@@ -1,17 +1,12 @@
 import React,{useState, useEffect} from "react";
 import {getOrdersByCategory, getFamilysByOrder} from "../data/fetch";
 import {
-    Container,
+
     UncontrolledDropdown,
     DropdownToggle,
     DropdownMenu,
     DropdownItem,
-    Row,
-    Col,
-    InputGroup,
-    Input,
-    Button,
-    FormGroup
+
   } from "reactstrap";
 
 
@@ -22,7 +17,7 @@ function Classification(props){
     const [order, setOrder] = useState("");
     const [family, setFamily] = useState("");
     const [genus, setGenus] = useState("");
-    const categoryList = ["Algae","Amphibian","Bird","Category","Malacostraca","Fish","Fungi","Insect","Invertebrate","Mammal","Nonvascular Plant","Reptile","Gastropoda","Arachnida","Vascular Plant"];
+    const categoryList = ["Algae","Amphibian","Bird","Malacostraca","Fish","Fungi","Insect","Invertebrate","Mammal","Nonvascular Plant","Reptile","Gastropoda","Arachnida","Vascular Plant"];
     const [orderList, setOrderList] = useState([]);
     const [familyList, setFamilyList] = useState([]);
     const [genusList, setGenusList] = useState([]);
@@ -32,6 +27,7 @@ function Classification(props){
         setCategory(selectedCategory);
         updateCategory(selectedCategory);
         updateOrder("");
+        updateFamily("");
     }
 
     const handleSelectOrder = (event) => {
@@ -59,6 +55,7 @@ function Classification(props){
                 const orderList = await getOrdersByCategory(category);
                 setOrderList(orderList);
                 setOrder("");
+                setFamily("");
             }catch(error){
                 console.log(error);
             }
@@ -112,8 +109,8 @@ function Classification(props){
                     {order === "" ? "Order" : order}
                 </DropdownToggle>
                 <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
-                    {orderList.map((order) => {
-                        return <DropdownItem onClick = {handleSelectOrder}>{order}</DropdownItem>
+                    {orderList.map((order, index) => {
+                        return <DropdownItem key={index} onClick = {handleSelectOrder}>{order}</DropdownItem>
                     })}
                 </DropdownMenu>
             </UncontrolledDropdown>
@@ -130,31 +127,31 @@ function Classification(props){
                     {family === "" ? "Family" : family}
                 </DropdownToggle>
                 <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
-                    {familyList.map((family) => {
-                        return <DropdownItem onClick = {handleSelectFamily}>{family}</DropdownItem>
+                    {familyList.map((family, index) => {
+                        return <DropdownItem key={index} onClick = {handleSelectFamily}>{family}</DropdownItem>
                     })}
                 </DropdownMenu>
             </UncontrolledDropdown>
         )
     }
 
-    const GenusDropdown = () => {
-        if(genusList.length === 0){
-            return null;
-        }
-        return (
-            <UncontrolledDropdown>
-                <DropdownToggle caret>
-                    {genus === "" ? "Genus" : genus}
-                </DropdownToggle>
-                <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
-                    {genusList.map((genus) => {
-                        return <DropdownItem onClick = {handleSelectGenus}>{genus}</DropdownItem>
-                    })}
-                </DropdownMenu>
-            </UncontrolledDropdown>
-        )
-    }
+    // const GenusDropdown = () => {
+    //     if(genusList.length === 0){
+    //         return null;
+    //     }
+    //     return (
+    //         <UncontrolledDropdown>
+    //             <DropdownToggle caret>
+    //                 {genus === "" ? "Genus" : genus}
+    //             </DropdownToggle>
+    //             <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
+    //                 {genusList.map((genus, index) => {
+    //                     return <DropdownItem key={index} onClick = {handleSelectGenus}>{genus}</DropdownItem>
+    //                 })}
+    //             </DropdownMenu>
+    //         </UncontrolledDropdown>
+    //     )
+    // }
 
 
     return (
@@ -164,8 +161,8 @@ function Classification(props){
                     {category === "" ? "Category" : category}
                 </DropdownToggle>
                 <DropdownMenu style={{ maxHeight: "100px", overflow: "scroll" }} container="body">
-                    {categoryList.map((category) => {
-                        return <DropdownItem onClick = {handleSelectCategory}>{category}</DropdownItem>
+                    {categoryList.map((category, index) => {
+                        return <DropdownItem key={index} onClick = {handleSelectCategory}>{category}</DropdownItem>
                     })}
                 </DropdownMenu>
             </UncontrolledDropdown>

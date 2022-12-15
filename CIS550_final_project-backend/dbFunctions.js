@@ -291,10 +291,11 @@ const getTradesBySpecies = async (species) => {
 const getSpeciesSameCountry = async () => {
   try {
     const db = await getDB();
-    const query = `SELECT DISTINCT S.Taxon 
-                   FROM Species_Trade S 
-                   WHERE Exporter IN (SELECT Importer FROM Species_Trade S2 
-                   WHERE S2.Taxon=S.Taxon)`;
+    const query = `SELECT  S.Taxon, SC.Common_Names 
+                   FROM Wildlife_Trade S, Species_complete SC    
+                   WHERE Exporter IN (SELECT Importer FROM Wildlife_Trade S2 
+                   WHERE S2.Taxon=S.Taxon) AND S.Taxon=SC.Scientific_Name
+                   GROUP BY S.Taxon;`;
     const [rows] = await db.execute(query);
     return rows;
   } catch (err) {
@@ -382,22 +383,20 @@ const getSpeciesAbundanceByState = async (args) => {
 
 // Query7: filter species according to multiple conditions:
 const getFilteredSpecies = async (args) => {
-  const { park, family, order } = args;
+  const { park, family } = args;
   try {
     const db = await getDB();
-    const query = ' WITH Temp AS (\
-					SELECT ID, O.Scientific_Name, Family, Park_Name, State\
-					FROM Occurrence O JOIN National_Park NP ON O.Park_ID = NP.Code\
-						JOIN Species S ON S.Scientific_Name = O.Scientific_Name\
-					)\
-					SELECT t1.Family, t1.Park_Name, COUNT(*) AS NUM\
-					FROM Temp t1, Temp t2\
-					WHERE t1.Park_Name = t2.Park_Name AND t1.Park_Name = ?\
-					AND t1.Family = ?\
-					AND t1.Family = t2.Family AND t1.Scientific_Name <> t2.Scientific_Name\
-					GROUP BY t1.Family\
-					ORDER BY NUM ?, t1.Family';
-    const params = [park, family, order];
+    const query = `WITH Temp AS (
+          SELECT SC.Scientific_Name, Family, Park_Name, SC.Common_Names
+          FROM Species_complete SC)
+          SELECT t1.Scientific_Name, t1.Common_Names, t1.Park_Name, COUNT(*) AS NUM
+          FROM Temp t1, Temp t2
+          WHERE t1.Park_Name = t2.Park_Name AND t1.Park_Name = ?
+          AND t1.Family = ?
+          AND t1.Family = t2.Family AND t1.Scientific_Name <> t2.Scientific_Name
+          GROUP BY t1.Family
+          ORDER BY NUM, t1.Family`;
+    const params = [park, family];
     const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
@@ -405,27 +404,17 @@ const getFilteredSpecies = async (args) => {
     throw new Error('Error executing the query');
   }
 };
-
 // Query8: filter park by fire suffer:
 const getParksByFireSuffer = async (percent) => {
   try {
     const db = await getDB();
-    const num = 5 * percent;
-    const query = ` WITH TEMP AS (SELECT Scientific_Name, COUNT(*)\
-					FROM Wild_fire W\
-						JOIN Occurrence O on W.National_park=O.Park_Name\
-					GROUP BY Scientific_Name\
-					ORDER BY COUNT(*) DESC\
-					LIMIT 2000)\
-					SELECT Code, Name\
-					FROM National_Park N JOIN Occurrence O on N.Name=O.Park_Name\
-					WHERE O.Scientific_Name IN (SELECT Scientific_Name  FROM TEMP)\
-					GROUP BY N.Name\
-					HAVING COUNT(*)>(SELECT 0.01*COUNT(*)\
-                         FROM National_Park N2\
-                         WHERE N2.Name=N.Name\   GROUP BY N2.Name)\
-					ORDER BY  N.Name\
-					LIMIT ${num}`;
+    const num = Math.floor(0.56 * percent);
+    // console.log("num = ", num);
+    const query = ` SELECT sp.Park_ID AS Code, sp.Park_Name AS Name, np.Acres AS Acres
+                  FROM Suffered_Park sp JOIN National_Park np ON sp.Park_ID = np.Code
+                  GROUP BY Code, Name
+                  ORDER BY sum(suffer_num) DESC
+                  LIMIT ${num};`;
     const params = [num];
     const [rows] = await db.execute(query, params);
     return rows;
@@ -497,7 +486,7 @@ const getAllCategories = async () => {
   try {
     const db = await getDB();
     const query = `SELECT distinct t.Category 
-                      FROM Order_Category t 
+                      FROM Order_Category t WHERE t.Category <> 'Category'
                       ORDER BY t.Category ASC`;
     const [rows] = await db.execute(query);
     return rows;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { searchSpecies } from "data/fetch";
+import Classification from "./Classification";
 import {
-
     UncontrolledDropdown,
     DropdownToggle,
     DropdownMenu,
@@ -9,17 +9,18 @@ import {
     Row,
     Col,
     Button,
-
   } from "reactstrap";
 
 function ComplexFilter(props){
     const {setSpeciesData} = props;
     const [keyword, setKeyword] = useState("");
     const [args, setArgs] = useState({});
+    const [category, setCategory] = useState("");
+    const [order,setOrder] = useState("");
+    const [family,setFamily] = useState("");
 
     const handleOnClickKeyword = (e) => {
-      console.log("handelSelect",e.target.innerText);
-      setKeyword(e.target.innerText)
+      setKeyword(e.target.innerText);
     }
     
     const handleOnClickArg = (e) => {
@@ -31,28 +32,41 @@ function ComplexFilter(props){
 
     const handleOnSubmit = async() => {
         // fetch data
-        if(keyword !== ""){
-            const query = {keyword, ...args}
-            const result = await searchSpecies(query);
-            if(result && result.length > 0){
-                setSpeciesData(result);
-            }
+        if(keyword === ""){
+          return;
+        }
+
+        const query = {keyword, ...args};
+        if(keyword === "sameFamily"){
+          if (category === "" || order === "" || family === ""){
+            console.log("category or family is empty");
+            return;
+          }
+          query.family = family;
+        }
+        console.log("query", query);
+        
+        const result = await searchSpecies(query);
+        console.log("result", result);
+        if(result && result.length > 0){
+          setSpeciesData(result);
         }
     }
 
-    const keywords = [ "sameCountryTrade", "sameFamily", "threeStates"]
+    // const keywords = [ "sameCountryTrade", "sameFamily"]
+    const keywords = [ "sameCountryTrade"]
     const keywordOptions = keywords.map((keywordOption)=>{
-      return <DropdownItem onClick = {handleOnClickKeyword}>{keywordOption}</DropdownItem>
+      return <DropdownItem key={keywordOption} onClick = {handleOnClickKeyword}>{keywordOption}</DropdownItem>
     })
 
 
     const argsComponentsMap = {
         // "orderDistribution": [{},{},{}],
         "sameCountry": [],
-        "sameFamily": [{type:"park",selections:["Acadia National Park","Arches National Park","Badlands National Park","Big Bend National Park","Biscayne National Park","Black Canyon of the Gunnison National Park","Bryce Canyon National Park","Canyonlands National Park","Capitol Reef National Park","Carlsbad Caverns National Park","Channel Islands National Park","Congaree National Park","Crater Lake National Park","Cuyahoga Valley National Park","Denali National Park and Preserve","Death Valley National Park","Dry Tortugas National Park","Everglades National Park","Gates Of The Arctic National Park and Preserve","Glacier National Park","Glacier Bay National Park and Preserve","Great Basin National Park","Grand Canyon National Park","Great Sand Dunes National Park and Preserve","Great Smoky Mountains National Park","Grand Teton National Park","Guadalupe Mountains National Park","Haleakala National Park","Hawaii Volcanoes National Park","Hot Springs National Park","Isle Royale National Park","Joshua Tree National Park","Katmai National Park and Preserve","Kenai Fjords National Park","Kobuk Valley National Park","Lake Clark National Park and Preserve","Lassen Volcanic National Park","Mammoth Cave National Park","Mesa Verde National Park","Mount Rainier National Park","North Cascades National Park","Olympic National Park","Petrified Forest National Park","Pinnacles National Park","Redwood National Park","Rocky Mountain National Park","Saguaro National Park","Sequoia and Kings Canyon National Parks","Shenandoah National Park","Theodore Roosevelt National Park","Voyageurs National Park","Wind Cave National Park","Wrangell - St Elias National Park and Preserve","Yellowstone National Park","Yosemite National Park","Zion National Park"]},
-            {type:"family",selections:[]},
-            {type:"order",selections:[]}],
-        "threeStates": []
+        // "sameFamily": [{type:"park",selections:["Acadia National Park","Arches National Park","Badlands National Park","Big Bend National Park","Biscayne National Park","Black Canyon of the Gunnison National Park","Bryce Canyon National Park","Canyonlands National Park","Capitol Reef National Park","Carlsbad Caverns National Park","Channel Islands National Park","Congaree National Park","Crater Lake National Park","Cuyahoga Valley National Park","Denali National Park and Preserve","Death Valley National Park","Dry Tortugas National Park","Everglades National Park","Gates Of The Arctic National Park and Preserve","Glacier National Park","Glacier Bay National Park and Preserve","Great Basin National Park","Grand Canyon National Park","Great Sand Dunes National Park and Preserve","Great Smoky Mountains National Park","Grand Teton National Park","Guadalupe Mountains National Park","Haleakala National Park","Hawaii Volcanoes National Park","Hot Springs National Park","Isle Royale National Park","Joshua Tree National Park","Katmai National Park and Preserve","Kenai Fjords National Park","Kobuk Valley National Park","Lake Clark National Park and Preserve","Lassen Volcanic National Park","Mammoth Cave National Park","Mesa Verde National Park","Mount Rainier National Park","North Cascades National Park","Olympic National Park","Petrified Forest National Park","Pinnacles National Park","Redwood National Park","Rocky Mountain National Park","Saguaro National Park","Sequoia and Kings Canyon National Parks","Shenandoah National Park","Theodore Roosevelt National Park","Voyageurs National Park","Wind Cave National Park","Wrangell - St Elias National Park and Preserve","Yellowstone National Park","Yosemite National Park","Zion National Park"]},
+        //     // {type:"family",selections:[]},
+        //   ],
+        // "threeStates": []
     }
 
 
@@ -82,8 +96,7 @@ function ComplexFilter(props){
   
        
     return (
-      <Row>
-    
+      <Row> 
       <Col lg="2" sm="6">
         <UncontrolledDropdown>
           <DropdownToggle caret>
@@ -95,9 +108,11 @@ function ComplexFilter(props){
         </UncontrolledDropdown>
       </Col>
         {argsComponents}
-        {keyword !== ""? <Button className="btn-round" color="default" type="button" onClick = {handleOnSubmit}>
+        {keyword ==="sameFamily"? <Col lg="2" sm="6"><Classification updateCategory={setCategory} updateOrder={setOrder} updateFamily={setFamily}/></Col> : null}
+        {keyword !== ""? <Col lg="2" sm="6"><Button className="btn-round" color="default" type="button" onClick = {handleOnSubmit}>
             Complex Search
-          </Button> : null}
+          </Button></Col> : null
+        }
     </Row>
   
   

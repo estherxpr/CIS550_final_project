@@ -99,7 +99,7 @@ function SpeciesAllHeader(props) {
           <p className="category">Or</p>
           <p className="category">Search By Conditions</p>
           <SimpleFilter setSpeciesData={setSpeciesData}/>
-          <ComplexFilter/>
+          <ComplexFilter setSpeciesData={setSpeciesData}/>
         </Container>
       </div>
     </div>
