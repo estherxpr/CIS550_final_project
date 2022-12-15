@@ -4,15 +4,16 @@ let mySQLConnection;
 
 const validSpeciesFileds = new Map(
   [['species_id', 'species_ID'],
-  ['occr_id', 'Occr_ID'],
-  ['park_id', 'Park_ID'], ['scientific_name', 'Scientific_Name'],
-  ['park_name', 'Park_Name'], ['occurrence', 'Occurrence'],
-  ['abundance', 'Abundance'], ['seasonality', 'Seasonality'], ['family', 'Family'],
-  ['conservation_status', 'Conservation_Status'],
-  ['speciesOrder', 'SpeciesOrder'],
-  ['order', 'Order'], ['category', 'Category'], ['common_names', 'Common_Names'],
-  ['nativeness', 'Nativeness'],
-  ['appendix', 'Appendix'], ['genus', 'Genus'],
+    ['occr_id', 'Occr_ID'],
+    ['park_id', 'Park_ID'], ['scientific_name', 'Scientific_Name'],
+    ['park_name', 'Park_Name'], ['occurrence', 'Occurrence'],
+    ['abundance', 'Abundance'], ['seasonality', 'Seasonality'], ['family', 'Family'],
+    ['conservation_status', 'Conservation_Status'],
+    ['speciesOrder', 'SpeciesOrder'],
+    // eslint-disable-next-line quotes
+    ['order', 'Order'], ['category', 'Category'], ['common_names', 'Common_Names'],
+    ['nativeness', 'Nativeness'],
+    ['appendix', 'Appendix'], ['genus', 'Genus'],
   ],
 );
 
@@ -147,7 +148,7 @@ const getSpeciesByFilter = async (args) => {
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i].toLowerCase();
     if (validSpeciesFileds.has(key)) {
-      const value = args[validSpeciesFileds.get(key)];
+      const value = args[keys[i]];
       const field = validSpeciesFileds.get(key);
       let q = `${field} = '${value}'`;
       if (field === 'Common_Names') {
@@ -163,7 +164,7 @@ const getSpeciesByFilter = async (args) => {
   // here is the simple version, only take occurrence's attributes
 
   const query = `SELECT * FROM Species_complete ${subQuery};`;
-  console.log("query:", query);
+  console.log('query:', query);
   try {
     const db = await getDB();
     const params = [];
@@ -194,12 +195,18 @@ const getSpeciesByName = async (name) => {
   try {
     const db = await getDB();
     const query = `
-    SELECT * FROM Species_complete   
-                    WHERE Common_Names LIKE '%${name}%' OR Scientific_Name LIKE '%${name}%'`;
+    SELECT SC.species_ID , SC.Scientific_Name AS scientific_name,
+    SC.Common_Names AS common_names,
+    SC.Category AS category,
+    SC.Order , SC.Family AS family, SC.Genus AS genus
+    FROM Species_complete SC
+    WHERE Scientific_Name = '${name}' 
+    OR Common_Names LIKE '%${name}%' LIMIT 1`;
     // const params = [name];
     const params = [];
     const [rows] = await db.execute(query, params);
-    return rows;
+    if (rows.length === 0) return {};
+    return rows[0];
   } catch (err) {
     console.log(`Error: ${err.message}`);
     throw new Error('Error executing the query');
@@ -267,10 +274,6 @@ const getSpeciesByState = async (args) => {
     throw new Error('Error executing the query');
   }
 };
-
-
-
-
 
 // Query5: Select all parks that in a state that has fire of class A
 const getParksByFireClass = async (args) => {
@@ -427,8 +430,7 @@ const getAllCategories = async () => {
     const db = await getDB();
     const query = `SELECT distinct t.Category 
                       FROM Order_Category t 
-                      WHERE Category != 'Category'
-                      ORDER BY Category ASC`;
+                      ORDER BY t.Category ASC`;
     const [rows] = await db.execute(query);
     return rows;
   } catch (err) {
@@ -445,7 +447,7 @@ const getOrdersByCategory = async (category) => {
     const query = `SELECT distinct t.SpeciesOrder
                     FROM Order_Category t
                     WHERE Category = '${category}' and SpeciesOrder != 'None'
-                    ORDER BY SpeciesOrder ASC;`
+                    ORDER BY SpeciesOrder ASC;`;
     const params = [];
     const [rows] = await db.execute(query, params);
     return rows;
@@ -462,7 +464,7 @@ const getFamiliesbyOrder = async (order) => {
     const query = `SELECT distinct t.Family
                   FROM Family_Order t
                   WHERE SpeciesOrder = '${order}' and Family != 'None'
-                  ORDER BY Family ASC;`
+                  ORDER BY Family ASC;`;
     const params = [];
     const [rows] = await db.execute(query, params);
     return rows;
@@ -472,15 +474,14 @@ const getFamiliesbyOrder = async (order) => {
   }
 };
 
-
 const getSpeciesbyFamily = async (family) => {
   try {
     const db = await getDB();
     // currently using like searching for state because some parks are located in multiple states
-    const query = `SELECT Distinct Common_Names
+    const query = `SELECT Distinct Scientific_Name
                     FROM Species t
-                    WHERE Family = '${family}' and Common_Names != 'None'
-                    ORDER BY Common_Names ASC;`
+                    WHERE Family = '${family}' 
+                    ORDER BY Scientific_Name ASC;`;
     const params = [];
     const [rows] = await db.execute(query, params);
     return rows;
@@ -516,5 +517,5 @@ module.exports = {
   getAllCategories,
   getOrdersByCategory,
   getFamiliesbyOrder,
-  getSpeciesbyFamily
+  getSpeciesbyFamily,
 };

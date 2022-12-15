@@ -28,7 +28,8 @@ app.get('/', (req, res) => {
 app.get('/parks', async (req, res) => {
   try {
     const results = await lib.getAllParks();
-    res.status(200).json({ data: results });
+    const parksName = results.map((park) => park.Name);
+    res.status(200).json({ data: parksName });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
@@ -65,7 +66,6 @@ app.get('/parks/:park', async (req, res) => {
   }
 });
 
-
 app.get('/parks/:park/species', async (req, res) => {
   const { park } = req.params;
   try {
@@ -75,9 +75,6 @@ app.get('/parks/:park/species', async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 });
-
-
-
 
 /*
   This endpoint is used to get filtered species by query
@@ -111,7 +108,6 @@ app.get('/species/:species', async (req, res) => {
   try {
     const { species } = req.params;
     const result = await lib.getSpeciesByName(species);
-
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ error: err.message });
@@ -171,7 +167,7 @@ app.get('/states/:state/species', async (req, res) => {
 
 app.get('/states/:state/fires', async (req, res) => {
   const { state } = req.params;
-  console.log(state)
+
   try {
     const result = await lib.getFiresByState(state);
     res.status(200).json({ data: result });
@@ -232,15 +228,15 @@ app.get('/search/species', async (req, res) => {
     let result;
     // by default, we will parese args(which is an object) into dbFunction
     switch (keyword) {
-      case 'orderDistribution': {
+      case 'orderDistribution': { // this reflected on state page
         result = await lib.getOrderListInState(args);
         break;
       }
-      case 'aboundanceByState': {
+      case 'aboundanceByState': { // this reflected on state page
         result = await lib.getSpeciesAbundanceByState(args); // args: state
         break;
       }
-      case 'sameCountry': {
+      case 'sameCountryTrade': {
         result = await lib.getSpeciesSameCountry(args); // non args
         break;
       }
@@ -275,35 +271,38 @@ app.get('/search/species', async (req, res) => {
 //     res.status(404).json({ error: err.message });
 //   }
 // });
-
-
 // app.get('/categories')
+
 app.get('/category', async (req, res) => {
   try {
     const results = await lib.getAllCategories();
-    res.status(200).json({ data: results });
+    const categories = results.map((item) => item.Category);
+    res.status(200).json({ data: categories });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
 });
 
 // app.get('categories/:category/order')
-app.get('/category/:category/order/', async (req, res) => {
+app.get('/category/:category/order', async (req, res) => {
   const { category } = req.params;
-  console.log(req.params)
   try {
     const result = await lib.getOrdersByCategory(category);
-    res.status(200).json({ data: result });
+    const order = result.map((item) => item.SpeciesOrder);
+    res.status(200).json({ data: order });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
 });
+
 // app.get('orders/:order/family')
 app.get('/order/:order/family', async (req, res) => {
   const { order } = req.params;
   try {
     const result = await lib.getFamiliesbyOrder(order);
-    res.status(200).json({ data: result });
+    const family = result.map((item) => item.Family);
+
+    res.status(200).json({ data: family });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
@@ -314,7 +313,8 @@ app.get('/family/:family/species', async (req, res) => {
   const { family } = req.params;
   try {
     const result = await lib.getSpeciesbyFamily(family);
-    res.status(200).json({ data: result });
+    const species = result.map((item) => item.Scientific_Name);
+    res.status(200).json({ data: species });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
@@ -323,6 +323,5 @@ app.get('/family/:family/species', async (req, res) => {
 app.all((req, res) => {
   res.status(404);
 });
-
 
 module.exports = app; // for testing
