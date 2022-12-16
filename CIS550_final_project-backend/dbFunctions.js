@@ -2,6 +2,7 @@ const mysql = require('mysql2/promise');
 
 let mySQLConnection;
 const { MongoClient } = require('mongodb');
+
 const dbURL = 'mongodb+srv://550_final:final_550@cluster0.0empoke.mongodb.net/?retryWrites=true&w=majority/final';
 let MongoConnection;
 
@@ -47,52 +48,50 @@ const closeMySQLConnection = async () => {
   await mySQLConnection.end();
 };
 
-
 const connectMG = async () => {
   try {
-      MongoConnection = await MongoClient.connect(
-          dbURL,
-          { useNewUrlParser: true, useUnifiedTopology: true },
-      );
-      return MongoConnection;
+    MongoConnection = await MongoClient.connect(
+      dbURL,
+      { useNewUrlParser: true, useUnifiedTopology: true },
+    );
+    return MongoConnection;
   } catch (err) {
-      console.log(err.message);
-      throw new Error(err.message);
+    console.log(err.message);
+    throw new Error(err.message);
   }
 };
 
 const getMGDB = async () => {
   if (!MongoConnection) {
-      try {
-          await connectMG();
-      } catch (err) {
-          throw new Error(err.message);
-      }
+    try {
+      await connectMG();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
   return MongoConnection.db();
 };
 
 const closeMongoDBConnection = async () => {
   if (MongoConnection) {
-      try {
-          await MongoConnection.close();
-      } catch (err) {
-          throw new Error(err.message);
-      }
+    try {
+      await MongoConnection.close();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 };
 
 const getUrl = async (s_name) => {
   try {
-      const db = await getMGDB();
-      const res = await db.collection('img').find(
-          { name: s_name }).limit(2).toArray();
-      console.log("result = ", res);
-      return res;
-
-
+    const db = await getMGDB();
+    const res = await db.collection('img').find(
+      { name: s_name },
+    ).limit(2).toArray();
+    console.log('result = ', res);
+    return res;
   } catch (err) {
-      throw new Error(err.message);
+    throw new Error(err.message);
   }
 };
 
@@ -188,7 +187,7 @@ const getFiresByPark = async (park) => {
     const query = 'SELECT * FROM Wild_fire WHERE National_park = ?';
     if (park.length === 4) {
       const parkObj = await getParkNameByParkCode(park);
-      park = JSON.stringify(parkObj.Name).replace(/^"(.+(?="$))"$/, '$1')
+      park = JSON.stringify(parkObj.Name).replace(/^"(.+(?="$))"$/, '$1');
     }
     const params = [park];
     const [rows] = await db.execute(query, params);
@@ -259,7 +258,6 @@ const getSpeciesByFilter = async (args) => {
   }
 };
 
-
 // get state by name
 const getStateByName = async (state) => {
   try {
@@ -298,7 +296,7 @@ const getSpeciesByParkName = async (park) => {
     const query = 'SELECT * FROM Occurrence WHERE Park_Name = ?';
     if (park.length === 4) {
       const parkObj = await getParkNameByParkCode(park);
-      park = JSON.stringify(parkObj.Name).replace(/^"(.+(?="$))"$/, '$1')
+      park = JSON.stringify(parkObj.Name).replace(/^"(.+(?="$))"$/, '$1');
     }
     const params = [park];
     const [rows] = await db.execute(query, params);
@@ -315,7 +313,7 @@ const getFeaturedSpeciesByParkName = async (park, num) => {
     const query = `SELECT Scientific_Name AS name FROM Occurrence WHERE Abundance = "Abundant" AND Park_Name = ? LIMIT ${num}`;
     if (park.length === 4) {
       const parkObj = await getParkNameByParkCode(park);
-      park = JSON.stringify(parkObj.Name).replace(/^"(.+(?="$))"$/, '$1')
+      park = JSON.stringify(parkObj.Name).replace(/^"(.+(?="$))"$/, '$1');
     }
     const params = [park];
     const [rows] = await db.execute(query, params);
@@ -360,14 +358,14 @@ const getSpeciesSameCountry = async () => {
 const getSpeciesByState = async (args) => {
   const { state } = args;
 
-    try {
+  try {
     const db = await getDB();
     const query = `SELECT DISTINCT o.Scientific_Name as species 
                   FROM Occurrence o JOIN National_Park np ON 
                   o.Park_ID = np.Code WHERE np.State LIKE '%${state}%';`;
     // const params = [state];
     const params = [];
-    const [rows] = await db.execute(query,params);
+    const [rows] = await db.execute(query, params);
     return rows;
   } catch (err) {
     console.log(`Error: ${err.message}`);
@@ -375,14 +373,13 @@ const getSpeciesByState = async (args) => {
   }
 };
 
-
 // const getSpeciesNumByState = async (args) => {
 //   const { state } = args;
 //   console.log(state);
 //     try {
 //     const db = await getDB();
-//     const query = `SELECT COUNT (DISTINCT o.Scientific_Name) as num 
-//                   FROM Occurrence o JOIN National_Park np ON 
+//     const query = `SELECT COUNT (DISTINCT o.Scientific_Name) as num
+//                   FROM Occurrence o JOIN National_Park np ON
 //                   o.Park_ID = np.Code WHERE np.State LIKE '%${state}%';`;
 //     // const params = [state];
 //     const params = [];
@@ -394,13 +391,11 @@ const getSpeciesByState = async (args) => {
 //   }
 // };
 
-
-
 // Query5: Select all parks that in a state that has fire of input class
 const getParksByFireClass = async (fire_size) => {
   try {
     const db = await getDB();
-    const query = `SELECT Code, Name 
+    const query = `SELECT Code, Name, Acres 
                    FROM National_Park np 
                    WHERE np.State in ( 
                    select distinct state 
@@ -489,7 +484,7 @@ const getOrderListInState = async (args) => {
 					SELECT NP.Name FROM National_Park NP WHERE NP.state = '${state}')
 					GROUP BY FO.SpeciesOrder, O.Park_Name
 					ORDER BY NUM DESC`;
-    
+
     // const params = [state];
     const [rows] = await db.execute(query);
     return rows;
@@ -602,20 +597,20 @@ const getSpeciesbyFamily = async (family) => {
 
 const getSpeciesDistribution = async (name) => {
   try {
-      const db = await getDB();
-      const query = `
+    const db = await getDB();
+    const query = `
   SELECT Park_Name, Occurrence, Seasonality, Nativeness, Abundance
   FROM Species_complete SC
   WHERE Scientific_Name = '${name}' 
   ORDER BY Park_Name `;
       // const params = [name];
-      const params = [];
-      const [rows] = await db.execute(query, params);
-      console.log(rows);
-      return rows;
+    const params = [];
+    const [rows] = await db.execute(query, params);
+    console.log(rows);
+    return rows;
   } catch (err) {
-      console.log(`Error: ${err.message}`);
-      throw new Error('Error executing the query');
+    console.log(`Error: ${err.message}`);
+    throw new Error('Error executing the query');
   }
 };
 
@@ -654,5 +649,5 @@ module.exports = {
   getOrdersByCategory,
   getFamiliesbyOrder,
   getSpeciesbyFamily,
-  getSpeciesDistribution
+  getSpeciesDistribution,
 };

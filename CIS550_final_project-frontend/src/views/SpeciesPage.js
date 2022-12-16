@@ -36,7 +36,7 @@ function SpeciesPage() {
 
 
     const name = JSON.stringify(scientificName.speciesName).replace(/^"(.+(?="$))"$/, '$1');
-    const [species, setSpecies] = useState([]);
+    const [species, setSpecies] = useState({});
     const firstRendering = useRef(true);
 
     const name3 = 'A'
@@ -46,7 +46,9 @@ function SpeciesPage() {
         async function fetchData() {
             try {
                 const data = await getSpeciesByName(name);
-                setSpecies(data);
+                if (data && data.length > 0){
+                    setSpecies(data[0]);
+                }
                 const distribution = await getDisName(name);
                 setDis(distribution);
                 
@@ -65,6 +67,7 @@ function SpeciesPage() {
         }
     })
   
+    console.log("species: ", species);
     
 
     React.useEffect(() => {
@@ -93,6 +96,7 @@ function SpeciesPage() {
             );
         });
     }
+    console.log("dis: ", dis)
     return (
         <div>
             <IndexNavbar />
@@ -106,18 +110,17 @@ function SpeciesPage() {
                                     <CardBody>
                                         <h3 className="title">{name}</h3>
                                         {urls.length > 0 ? <img src={urls[0]} alt={name} width="350px" height="300px"></img> : <p className="category">No image found</p>}
-                                        
                                     </CardBody>
                                 </Card>
                             </Col>
                             <Col>
                                 <Card>
                                     <CardBody>
-                                        <h4 className="text">Common name:   {species.common_names}</h4>
-                                        <h4 className="text">Genus:         {species.genus}</h4>
-                                        <h4 className="text">Family:        {species.family}</h4>
+                                        <h4 className="text">Common name:   {species.Common_Names}</h4>
+                                        <h4 className="text">Genus:         {species.Genus}</h4>
+                                        <h4 className="text">Family:        {species.Family}</h4>
                                         <h4 className="text">Order:         {species.SpeciesOrder}</h4>
-                                        <h4 className="text">Category:      {species.category}</h4>
+                                        <h4 className="text">Category:      {species.Category}</h4>
                                         <h4 className="text">Conservation:  {species.Conservation_Status}</h4>
                                     </CardBody>
                                 </Card>
@@ -145,8 +148,8 @@ function SpeciesPage() {
                                
 
                                             {dis.map(row => (
-                                                <tr key={dis.Park_Name + dis.Occurrence}>
-                                                    <td><Link to={`/parks/${dis.Park_Name}`} >{row.Park_Name}</Link></td>
+                                                <tr key={row.Park_Name + row.Occurrence}>
+                                                    <td><Link to={`/parks/${row.Park_Name}`} >{row.Park_Name}</Link></td>
                                                         <td>{row.Nativeness}</td>
                                                         <td>{row.Occurrence}</td>
                                                         <td>{row.Seasonality}</td>

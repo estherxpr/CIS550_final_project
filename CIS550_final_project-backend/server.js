@@ -80,7 +80,6 @@ app.get('/park/:code', async (req, res) => {
   }
 });
 
-
 app.get('/parks/:park/species', async (req, res) => {
   const { park } = req.params;
   try {
@@ -100,8 +99,6 @@ app.get('/parks/:park/featuredSpecies/:num', async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 });
-
-
 
 /*
   This endpoint is used to get filtered species by query
@@ -133,13 +130,13 @@ app.get('/species', async (req, res) => {
 * */
 app.get('/species/:species', async (req, res) => {
   try {
-      const { species } = req.params;
-      const result = await lib.getSpeciesByName(species);
-      const result2 = await lib.getUrl(species);
-      const result3 = await lib.getSpeciesDistribution(species);
-      res.status(200).json({ data: result, img: result2, dis: result3 });
+    const { species } = req.params;
+    const result = await lib.getSpeciesByName(species);
+    const result2 = await lib.getUrl(species);
+    const result3 = await lib.getSpeciesDistribution(species);
+    res.status(200).json({ data: result, img: result2, dis: result3 });
   } catch (err) {
-      res.status(404).json({ error: err.message });
+    res.status(404).json({ error: err.message });
   }
 });
 
@@ -235,11 +232,19 @@ app.get('/search/parks', async (req, res) => {
   try {
     switch (keyword) {
       case 'fireSuffer': { // this correlated to query 8
+        if (!args) {
+          res.status(400).json({ error: 'Please provide a fire suffer' });
+          return;
+        }
         const result = await lib.getParksByFireSuffer(args);
         res.status(200).json({ data: result });
         return;
       }
       case ('fireClass'): { // this correlated to query 5
+        if (!args) {
+          res.status(400).json({ error: 'Please provide a fire class' });
+          return;
+        }
         const result = await lib.getParksByFireClass(args);
         res.status(200).json({ data: result });
         return;
@@ -259,7 +264,7 @@ app.get('/search/species', async (req, res) => {
   const {
     keyword, ...args
   } = req.query;
-  console.log(req.query);
+
   try {
     // const result = await lib.getSpeciesBySpecificState(category, state1, state2, states);
     // we can also add some pagination here

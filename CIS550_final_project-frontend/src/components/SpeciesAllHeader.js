@@ -7,20 +7,18 @@ import SimpleFilter from "components/SimpleFilter.js";
 // reactstrap components
 import {
   Container,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
+  // UncontrolledDropdown,
+  // DropdownToggle,
+  // DropdownMenu,
+  // DropdownItem,
   Row,
   Col,
   InputGroup,
   Input,
   Button,
-  FormGroup
+  // FormGroup
 } from "reactstrap";
 // import { set } from "mongoose";
-
-
 
 
 function SpeciesAllHeader(props) {
@@ -51,11 +49,12 @@ function SpeciesAllHeader(props) {
   const handleOnSearch = async() => {
     if(speciesName === "") return;
     const result = await getSpeciesByName(speciesName);
-    if(!result || !result.scientific_name){ 
+
+    if(!result || !result.length ||result.length === 0 || !result[0].Scientific_Name){ 
       setSpeciesName("");
       return;
     }
-    navigate("/species/"+result.scientific_name);
+    navigate(`/species/${result[0].Scientific_Name}`);
   }
 
 

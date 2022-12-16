@@ -18,12 +18,14 @@ function SpeciesTable(props){
   const {speciesData} = props;
   let speciesRow = null;
   if (speciesData && speciesData.length > 0) {
-    speciesRow = speciesData.map((species) => {
+    speciesRow = speciesData.map((species, index) => {
       return (
-        <tr key={species.scientificName}>
+        <tr key={index}>
+          <td>
           <Link to={`/species/${species.scientificName}`}>
-            <td>{species.scientificName}</td>
+            {species.scientificName}
           </Link>
+          </td>
           <td>{species.commonName}</td>
           {/* <td>{species.category}</td>
           <td>{species.order}</td>

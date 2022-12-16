@@ -48,12 +48,11 @@ function SpeciesHeader() {
                     }}
                     ref={speciesHeader}
                 ></div>
-                <Container>
-                    {/* <div className="photo-container">
-            <img alt="..." src={require("assets/img/ryan.jpg")}></img>
-          </div> */}
+                 <h3 className="title">Species</h3>
+                {/* <Container>
+ 
                     <h3 className="title">Species</h3>
-                    {/* <Dropdown group isOpen={this.state.dropdownOpen} size="sm" toggle={this.toggle}> */}
+                  
                     <Row>
                         <Col>
                             <InputGroup
@@ -175,7 +174,7 @@ function SpeciesHeader() {
                     <Button className="btn-round" color="default" type="button">
                         Go
                     </Button>
-                </Container>
+                </Container> */}
             </div>
         </>
     );
