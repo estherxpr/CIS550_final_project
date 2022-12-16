@@ -328,3 +328,31 @@ export const searchSpecies = async(query) =>{
     }
 }
 
+export const getUrlName = async (name) => {
+  try {
+      const response = await axios.get(`${url}/species/${name}`);
+      if (response.status === 200) {
+          //console.log("url= ", response.data.img);
+          return response.data.img;
+      }
+      return [];
+  } catch (err) {
+      console.log(err);
+      return [];
+  }
+}
+
+export const getDisName = async (name) => {
+  try {
+      const response = await axios.get(`${url}/species/${name}`);
+      if (response.status === 200) {
+          //console.log("url= ", response.data.dis);
+          return response.data.dis;
+      }
+      return [];
+  } catch (err) {
+      console.log(err);
+      return [];
+  }
+}
+

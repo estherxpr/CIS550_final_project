@@ -1,6 +1,9 @@
 const mysql = require('mysql2/promise');
 
 let mySQLConnection;
+const { MongoClient } = require('mongodb');
+const dbURL = 'mongodb+srv://550_final:final_550@cluster0.0empoke.mongodb.net/?retryWrites=true&w=majority/final';
+let MongoConnection;
 
 const validSpeciesFileds = new Map(
   [['species_id', 'species_ID'],
@@ -42,6 +45,55 @@ const getDB = async () => {
 
 const closeMySQLConnection = async () => {
   await mySQLConnection.end();
+};
+
+
+const connectMG = async () => {
+  try {
+      MongoConnection = await MongoClient.connect(
+          dbURL,
+          { useNewUrlParser: true, useUnifiedTopology: true },
+      );
+      return MongoConnection;
+  } catch (err) {
+      console.log(err.message);
+      throw new Error(err.message);
+  }
+};
+
+const getMGDB = async () => {
+  if (!MongoConnection) {
+      try {
+          await connectMG();
+      } catch (err) {
+          throw new Error(err.message);
+      }
+  }
+  return MongoConnection.db();
+};
+
+const closeMongoDBConnection = async () => {
+  if (MongoConnection) {
+      try {
+          await MongoConnection.close();
+      } catch (err) {
+          throw new Error(err.message);
+      }
+  }
+};
+
+const getUrl = async (s_name) => {
+  try {
+      const db = await getMGDB();
+      const res = await db.collection('img').find(
+          { name: s_name }).limit(2).toArray();
+      console.log("result = ", res);
+      return res;
+
+
+  } catch (err) {
+      throw new Error(err.message);
+  }
 };
 
 // get all parks
@@ -548,10 +600,33 @@ const getSpeciesbyFamily = async (family) => {
   }
 };
 
+const getSpeciesDistribution = async (name) => {
+  try {
+      const db = await getDB();
+      const query = `
+  SELECT Park_Name, Occurrence, Seasonality, Nativeness, Abundance
+  FROM Species_complete SC
+  WHERE Scientific_Name = '${name}' 
+  ORDER BY Park_Name `;
+      // const params = [name];
+      const params = [];
+      const [rows] = await db.execute(query, params);
+      console.log(rows);
+      return rows;
+  } catch (err) {
+      console.log(`Error: ${err.message}`);
+      throw new Error('Error executing the query');
+  }
+};
+
 module.exports = {
   connect,
   getDB,
   closeMySQLConnection,
+  connectMG,
+  getMGDB,
+  closeMongoDBConnection,
+  getUrl,
   getAllParks,
   getAllStates,
   getSpeciesByFilter,
@@ -579,4 +654,5 @@ module.exports = {
   getOrdersByCategory,
   getFamiliesbyOrder,
   getSpeciesbyFamily,
+  getSpeciesDistribution
 };

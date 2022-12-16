@@ -133,12 +133,13 @@ app.get('/species', async (req, res) => {
 * */
 app.get('/species/:species', async (req, res) => {
   try {
-    const { species } = req.params;
-    const result = await lib.getSpeciesByName(species);
-    
-    res.status(200).json({ data: result });
+      const { species } = req.params;
+      const result = await lib.getSpeciesByName(species);
+      const result2 = await lib.getUrl(species);
+      const result3 = await lib.getSpeciesDistribution(species);
+      res.status(200).json({ data: result, img: result2, dis: result3 });
   } catch (err) {
-    res.status(404).json({ error: err.message });
+      res.status(404).json({ error: err.message });
   }
 });
 
