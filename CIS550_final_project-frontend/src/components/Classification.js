@@ -20,8 +20,8 @@ function Classification(props){
     const categoryList = ["Algae","Amphibian","Bird","Malacostraca","Fish","Fungi","Insect","Invertebrate","Mammal","Nonvascular Plant","Reptile","Gastropoda","Arachnida","Vascular Plant"];
     const [orderList, setOrderList] = useState([]);
     const [familyList, setFamilyList] = useState([]);
-    const [genusList, setGenusList] = useState([]);
-    console.log(1);
+
+
     const handleSelectCategory = (event) => {
         const selectedCategory = event.target.innerText;
         setCategory(selectedCategory);
@@ -42,11 +42,11 @@ function Classification(props){
         updateFamily(selectedFamily);
     }
 
-    const handleSelectGenus = (event) => {
-        const selectedGenus = event.target.innerText;
-        setGenus(selectedGenus);
+    // const handleSelectGenus = (event) => {
+    //     const selectedGenus = event.target.innerText;
+    //     setGenus(selectedGenus);
         
-    }
+    // }
 
     //get all orders by category
     useEffect(()=>{
@@ -82,21 +82,21 @@ function Classification(props){
     },[order]);
 
 
-    useEffect(()=>{
-        const getGenusList = async () => {
-            try{
-                const genusList = await getFamilysByOrder(family);
-                setGenusList(genusList);
-                setGenus("");
-            }catch(error){
-                console.log(error);
-            }
-        }
+    // useEffect(()=>{
+    //     const getGenusList = async () => {
+    //         try{
+    //             const genusList = await getFamilysByOrder(family);
+    //             setGenusList(genusList);
+    //             setGenus("");
+    //         }catch(error){
+    //             console.log(error);
+    //         }
+    //     }
 
-        if(family !== ""){
-            getGenusList();
-        }
-    },[family]);
+    //     if(family !== ""){
+    //         getGenusList();
+    //     }
+    // },[family]);
 
 
     const OrderDropdown = () => {

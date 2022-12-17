@@ -2,6 +2,7 @@ import React,{useEffect, useState,  createRef, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 import { getParksByState } from '../data/fetch';
 import ParksComplexFilter from "./ParksComplexFilter";
+import { checkPark } from "../data/fetch";
 // reactstrap components
 import {
   Container,
@@ -73,9 +74,19 @@ function ParksPageHeader(props) {
       setInput(e.target.value);
   }
 
-  const handleSearch = () => {
-      navigate(`/parks/${input}`);
-  }
+  const handleSearch = async() => {
+      if(input === "") return;
+      try{
+        const result = await checkPark(input);
+        if(result && result.Name){
+          navigate(`/parks/${input}`);
+        }else{
+          setInput("");
+        }
+      }catch(err){
+        console.log(err);
+      }
+    }
 
   const states = ['AR','AZ','CA','CO','FL','HI',
   'ID','KY','ME','MI','MN','MT','NC','ND','NM',
@@ -113,6 +124,7 @@ function ParksPageHeader(props) {
                 <Input
                   placeholder="Search By Park Name"
                   type="text"
+                  value = {input}
                   onFocus={() => setFirstFocus(true)}
                   onBlur={() => setFirstFocus(false)}
                   onChange = {handleInput}

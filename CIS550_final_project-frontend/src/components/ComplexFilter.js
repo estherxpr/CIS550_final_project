@@ -24,7 +24,7 @@ function ComplexFilter(props){
     }
     
     const handleOnClickArg = (e) => {
-        console.log("args", e.target.className.split(" ")[0], e.target.innerText);
+
         const argType = e.target.className.split(" ")[0];
         const argValue = e.target.innerText;
         setArgs({...args, [argType]:argValue})
@@ -39,15 +39,15 @@ function ComplexFilter(props){
         const query = {keyword, ...args};
         if(keyword === "sameFamily"){
           if (category === "" || order === "" || family === ""){
-            console.log("category or family is empty");
+
             return;
           }
           query.family = family;
         }
-        console.log("query", query);
+
         
         const result = await searchSpecies(query);
-        console.log("result", result);
+
         if(result && result.length > 0){
           setSpeciesData(result);
         }

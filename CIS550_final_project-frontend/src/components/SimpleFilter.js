@@ -20,7 +20,7 @@ function SimpleFilter(props){
 
     const handleParkChange = (event) => {
         const select = event.target.innerText
-        console.log("parks: ", select)
+
         setPark(select);
     }
     
@@ -41,16 +41,16 @@ function SimpleFilter(props){
         if(family !== ""){
             query.family = family;
         }
-        console.log("query", query);
+
         const result = await getSpeciesByFilter(query);
-        console.log("result", result);
+
         const species = result.map((s)=>{
             return {
                 scientificName: s.Scientific_Name,
                 commonName: s.Common_Names,
             }
         });
-        console.log("species", species);
+
         setSpeciesData(species);
     }
 

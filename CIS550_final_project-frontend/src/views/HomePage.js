@@ -1,16 +1,9 @@
 import React from "react";
 
-// reactstrap components
-// import {
-// } from "reactstrap";
-
-// core components
 import IndexNavbar from "components/Navbar.js";
 import IndexHeader from "components/Header.js";
 import DarkFooter from "components/Footer.js";
 import Tabs from "components/Tabs.js";
-
-
 
 
 function Index() {

@@ -14,7 +14,6 @@ const validSpeciesFileds = new Map(
     ['abundance', 'Abundance'], ['seasonality', 'Seasonality'], ['family', 'Family'],
     ['conservation_status', 'Conservation_Status'],
     ['speciesOrder', 'SpeciesOrder'],
-    // eslint-disable-next-line quotes
     ['order', 'SpeciesOrder'], ['category', 'Category'], ['common_names', 'Common_Names'],
     ['nativeness', 'Nativeness'],
     ['appendix', 'Appendix'], ['genus', 'Genus'],
@@ -88,7 +87,7 @@ const getUrl = async (s_name) => {
     const res = await db.collection('img').find(
       { name: s_name },
     ).limit(2).toArray();
-    console.log('result = ', res);
+
     return res;
   } catch (err) {
     throw new Error(err.message);
@@ -226,7 +225,6 @@ const getAllSpecies = async () => {
 const getSpeciesByFilter = async (args) => {
   let subQuery = 'WHERE ';
   const keys = Object.keys(args);
-
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i].toLowerCase();
     if (validSpeciesFileds.has(key)) {
@@ -246,10 +244,9 @@ const getSpeciesByFilter = async (args) => {
   // here is the simple version, only take occurrence's attributes
 
   const query = `SELECT * FROM Species_complete ${subQuery};`;
-  console.log('query:', query);
+
   try {
     const db = await getDB();
-    const params = [];
     const [rows] = await db.execute(query);
     return rows;
   } catch (err) {
@@ -473,19 +470,17 @@ const getParksByFireSuffer = async (percent) => {
 
 // Query9: Find all Species Order distribution in different parks in a State
 const getOrderListInState = async (args) => {
-  console.log(args);
   const { state } = args;
   try {
     const db = await getDB();
     const query = `SELECT FO.SpeciesOrder, O.Park_Name, COUNT(*) AS NUM
-					FROM Occurrence O JOIN Species S ON O.Scientific_Name = S.Scientific_Name
-						JOIN Family_Order FO ON FO.Family = S.Family
-					WHERE O.Park_Name IN (
-					SELECT NP.Name FROM National_Park NP WHERE NP.state = '${state}')
-					GROUP BY FO.SpeciesOrder, O.Park_Name
-					ORDER BY NUM DESC`;
+            FROM Occurrence O JOIN Species S ON O.Scientific_Name = S.Scientific_Name
+            JOIN Family_Order FO ON FO.Family = S.Family
+            WHERE O.Park_Name IN (
+            SELECT NP.Name FROM National_Park NP WHERE NP.state = '${state}')
+            GROUP BY FO.SpeciesOrder, O.Park_Name
+            ORDER BY NUM DESC`;
 
-    // const params = [state];
     const [rows] = await db.execute(query);
     return rows;
   } catch (err) {
@@ -603,10 +598,9 @@ const getSpeciesDistribution = async (name) => {
   FROM Species_complete SC
   WHERE Scientific_Name = '${name}' 
   ORDER BY Park_Name `;
-      // const params = [name];
+
     const params = [];
     const [rows] = await db.execute(query, params);
-    console.log(rows);
     return rows;
   } catch (err) {
     console.log(`Error: ${err.message}`);

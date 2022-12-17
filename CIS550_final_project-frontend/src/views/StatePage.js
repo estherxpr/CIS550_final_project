@@ -133,8 +133,6 @@ function StatePage() {
     const fetchData = async () => {
       try{
         const res = await getSpeciesDistributionByState(state);
-        // const res2 = await searchSpecies({keyword: "aboundanceByState", state});
-        // console.log(res2);
         setParks(res);
       } catch (err) {
         console.log(err);

@@ -7,10 +7,6 @@ import SimpleFilter from "components/SimpleFilter.js";
 // reactstrap components
 import {
   Container,
-  // UncontrolledDropdown,
-  // DropdownToggle,
-  // DropdownMenu,
-  // DropdownItem,
   Row,
   Col,
   InputGroup,

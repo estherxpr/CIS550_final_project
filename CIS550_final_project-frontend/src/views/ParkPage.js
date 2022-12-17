@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getPark, getFiresByPark, getFeaturedSpeciesByParkName } from "../data/fetch";
 import IndexNavbar from "components/Navbar.js";
 import { Carousel } from 'react-responsive-carousel';
-// reactstrap components
+
 import {
   Container,
   Col,
@@ -23,7 +23,6 @@ function ParkPage() {
     const [featuredSpecies, setFeaturedSpecies] = useState([]);
     const firstRendering = useRef(true);
     const name  = useRef(JSON.stringify(parkName.parkName).replace(/^"(.+(?="$))"$/, '$1'));
-
     useEffect(() => {
       async function fetchData() {
         try {
@@ -74,7 +73,7 @@ function ParkPage() {
           const data = await getFeaturedSpeciesByParkName(name.current, 10);
           setFeaturedSpecies(data);
         } catch (err) {
-          // throw new Error(err.message);
+          throw new Error(err.message);
         }
       }
       fetchData();
@@ -111,7 +110,6 @@ function ParkPage() {
                             <img src={imgSrc1} alt={name.current} width = "500px" height="450px" />
                             <img src={imgSrc2} alt={name.current} width = "500px" height="450px" />
                             <img src={imgSrc3} alt={name.current} width = "500px" height="450px" />
-                        
                         </Carousel>
                     </CardBody>
                 </Card>

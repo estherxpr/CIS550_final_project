@@ -39,7 +39,7 @@ function SpeciesPage() {
     const [species, setSpecies] = useState({});
     const firstRendering = useRef(true);
 
-    const name3 = 'A'
+
    
   
     useEffect(() => {
@@ -66,8 +66,7 @@ function SpeciesPage() {
             fetchData();
         }
     })
-  
-    console.log("species: ", species);
+
     
 
     React.useEffect(() => {
@@ -82,21 +81,8 @@ function SpeciesPage() {
         };
     }, []);
 
-    let orderRow = null;
-    if (dis.length > 0) {
-        orderRow = dis.map((dis) => {
-            return (
-                <tr >
-                    <td><Link to={`/parks/${dis.Park_Name}`} >{dis.Park_Name}</Link></td>
-                    <td>{dis.Nativeness}</td>
-                    <td>{dis.Occurrence}</td>
-                    <td>{dis.Seasonality}</td>
-                    <td>{dis.Conservation_Status}</td>
-                </tr>
-            );
-        });
-    }
-    console.log("dis: ", dis)
+
+   
     return (
         <div>
             <IndexNavbar />
@@ -157,19 +143,6 @@ function SpeciesPage() {
                         
                                                 </tr>
                                             ))}
-                                            {/* }
-                                            {dis.map((row, index) => {                            
-                                                return (
-                                                    <tr>
-                                                        <td><Link to={`/parks/${dis.Park_Name}`} >{row.Park_Name}</Link></td>
-                                                        <td>{row.Nativeness}</td>
-                                                        <td>{row.Occurrence}</td>
-                                                        <td>{row.Seasonality}</td>
-                                                        <td>{row.Conservation_Status}</td>
-                                                    </tr>
-                                                );
-                                            })}
-                                            {*/ }
                                        
                                         </tbody>
                                      </Table>
@@ -182,7 +155,7 @@ function SpeciesPage() {
                     <p className="category">Species Images</p>
 
                     <Row className="align-items-center">
-                        <Carousel
+                        { urls && urls.length > 0 ?<Carousel
                             key={urls.length}
                             showStatus={false}
                             infiniteLoop={true}
@@ -194,28 +167,19 @@ function SpeciesPage() {
                             centerMode = {true}
                             centerSlidePercentage = {30}
                           >
-                        <Col>
-                            <Card>
-                                <CardBody>
-                                    <img src={urls[1]} width={400} height={400} alt="states" />
-                                </CardBody>
-                            </Card>
-                        </Col>
-                        <Col>
-                            <Card>
-                                <CardBody>
-                                    <img src={urls[2]} width={400} height={400} alt="states" />
-                                </CardBody>
-                            </Card>
-                        </Col>
-                        <Col>
-                            <Card>
-                                <CardBody>
-                                    <img src={urls[3]} width={400} height={400} alt="states" />
-                                </CardBody>
-                            </Card>
-                        </Col>
-                        </Carousel>
+                        
+                        {urls.map((url, index) => {
+                            return(
+                                <Col key = {index}>
+                                <Card>
+                                    <CardBody>
+                                        <img src={url} width={400} height={400} alt="states" />
+                                    </CardBody>
+                                </Card>
+                                    </Col>
+                            )
+                        })}
+                        </Carousel> : null}
                     </Row>
                 </div>
             </div>

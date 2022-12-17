@@ -2,11 +2,9 @@ import React,{useState, useEffect} from "react";
 import {Link} from "react-router-dom";
 import ParksScroll from "components/ParksScroll";
 import IndexNavbar from "components/Navbar.js";
-// reactstrap components
+
 import {
-
   Container,
-
   Table,
 } from "reactstrap";
 

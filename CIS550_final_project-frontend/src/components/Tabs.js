@@ -14,7 +14,6 @@ import {
 } from "reactstrap";
 
 
-
 function Tabs() {
 
   return (

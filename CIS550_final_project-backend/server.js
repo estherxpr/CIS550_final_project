@@ -12,6 +12,11 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to CIS550 Project' });
 });
 
+// private function to remove invalid characters
+function removeInvalidChars(string) {
+  return string.replace(/[^a-zA-Z0-9 ]/g, '');
+}
+
 /*
   for this server, we have four main endpoints: states, parks, species, trades, and search
 
@@ -52,12 +57,24 @@ app.get('/parks', async (req, res) => {
 * */
 app.get('/parks/:park', async (req, res) => {
   const { park } = req.params;
+  if (!park) {
+    res.status(404).json({ error: 'park not found' });
+    return;
+  }
+  let parkName = park.replace('%20', ' ');
+  parkName = removeInvalidChars(park);
+
+  if (parkName.length === 0) {
+    res.status(404).json({ error: 'park not found' });
+    return;
+  }
+
   try {
     let result;
     if (park.length === 4) {
-      result = await lib.getParkByCode(park);
+      result = await lib.getParkByCode(parkName);
     } else {
-      result = await lib.getParkByName(park);
+      result = await lib.getParkByName(parkName);
     }
     res.status(200).json({ data: result });
   } catch (err) {
@@ -66,7 +83,14 @@ app.get('/parks/:park', async (req, res) => {
 });
 
 app.get('/park/:code', async (req, res) => {
-  const { code } = req.params;
+  let { code } = req.params;
+  if (!code) {
+    res.status(400).json({ error: 'bad request' });
+    return;
+  }
+  code = code.replace('%20', ' ');
+  code = removeInvalidChars(code);
+
   try {
     let result;
     if (code.length === 4) {
@@ -81,7 +105,14 @@ app.get('/park/:code', async (req, res) => {
 });
 
 app.get('/parks/:park/species', async (req, res) => {
-  const { park } = req.params;
+  let { park } = req.params;
+  if (!park || park === 'undefined') {
+    res.status(404).json({ error: 'park not found' });
+    return;
+  }
+  park = park.replace('%20', ' ');
+  park = removeInvalidChars(park);
+
   try {
     const result = await lib.getSpeciesByParkName(park);
     res.status(200).json({ data: result });
@@ -91,9 +122,25 @@ app.get('/parks/:park/species', async (req, res) => {
 });
 
 app.get('/parks/:park/featuredSpecies/:num', async (req, res) => {
-  const { park, num } = req.params;
+  let { park, num } = req.params;
+  if (!park || park === 'undefined') {
+    res.status(404).json({ error: 'park not found' });
+    return;
+  }
+  if (!num || num === 'undefined') {
+    res.status(404).json({ error: 'num not found' });
+    return;
+  }
+  park = park.replace('%20', ' ');
+  park = removeInvalidChars(park);
+  num = parseInt(num, 10);
+  if (!num) {
+    res.status(400).json({ error: 'invalid num' });
+    return;
+  }
   try {
     const result = await lib.getFeaturedSpeciesByParkName(park, num);
+
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ error: err.message });
@@ -129,8 +176,15 @@ app.get('/species', async (req, res) => {
 
 * */
 app.get('/species/:species', async (req, res) => {
+  let { species } = req.params;
+  if (!species || species === 'undefined') {
+    res.status(400).json({ error: 'bad request' });
+    return;
+  }
+  species = species.replace('%20', ' ');
+  species = removeInvalidChars(species);
+
   try {
-    const { species } = req.params;
     const result = await lib.getSpeciesByName(species);
     const result2 = await lib.getUrl(species);
     const result3 = await lib.getSpeciesDistribution(species);
@@ -141,8 +195,15 @@ app.get('/species/:species', async (req, res) => {
 });
 
 app.get('/trades/:species', async (req, res) => {
+  let { species } = req.params;
+  if (!species || species === 'undefined') {
+    res.status(400).json({ error: 'bad request' });
+    return;
+  }
+  species = species.replace('%20', ' ');
+  species = removeInvalidChars(species);
+
   try {
-    const { species } = req.params;
     const result = await lib.getTradesBySpecies(species);
     res.status(200).json({ data: result });
   } catch (err) {
@@ -162,7 +223,14 @@ app.get('/states', async (req, res) => {
 
 // get a specific state general info
 app.get('/states/:state', async (req, res) => {
-  const { state } = req.params;
+  let { state } = req.params;
+  if (!state || state === 'undefined') {
+    res.status(400).json({ error: 'bad request' });
+    return;
+  }
+  state = state.replace('%20', ' ');
+  state = removeInvalidChars(state);
+
   try {
     const result = await lib.getStateByName(state);
     res.status(200).json({ data: result });
@@ -172,7 +240,13 @@ app.get('/states/:state', async (req, res) => {
 });
 
 app.get('/states/:state/parks', async (req, res) => {
-  const { state } = req.params;
+  let { state } = req.params;
+  if (!state || state === 'undefined') {
+    res.status(400).json({ error: 'bad request' });
+    return;
+  }
+  state = state.replace('%20', ' ');
+  state = removeInvalidChars(state);
   try {
     const result = await lib.getParksByState(state);
     res.status(200).json({ data: result });
@@ -183,6 +257,10 @@ app.get('/states/:state/parks', async (req, res) => {
 
 app.get('/states/:state/species', async (req, res) => {
   const args = req.params;
+  if (!args.state || args.state === 'undefined') {
+    res.status(400).json({ error: 'bad request' });
+    return;
+  }
   try {
     const result = await lib.getSpeciesByState(args);
     res.status(200).json({ data: result });

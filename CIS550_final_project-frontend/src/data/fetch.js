@@ -1,8 +1,6 @@
 import axios from 'axios';
 const url = 'http://localhost:8080';
 
-
-
 // export const getAllParks = async () => {
 //   try {
 //     const response = await axios.get(`${url}/parks`);
@@ -55,6 +53,7 @@ export const getParkByName = async(name) =>{
 }
 
 export const getFiresByPark = async(park) =>{
+  if (!park) return []; 
   try{  
     const response = await axios.get(`${url}/parks/${park}/fires`);
     if (response.status === 200){
@@ -187,6 +186,22 @@ export const getParkNameByParkCode  = async(code) =>{
     return null;
   }
 }
+
+export const checkPark = async(park)=>{
+  try{
+    const result = await axios.get(`${url}/parks/${park}`);
+    if(result.status !== 200){
+      return {};
+    }
+    
+    return result.data.data;
+  }catch(err){
+    console.log(err);
+    return {};
+  }
+}
+
+
 
 export const getParksByState = async(state) =>{
   try{

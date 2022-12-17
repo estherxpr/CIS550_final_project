@@ -44,7 +44,6 @@ function StatePageHeader(props) {
 
 
   const handleOnClick = (e) => {
-    // console.log(e.target.innerText);
     if(e.target.innerText){
       setState(e.target.innerText);
     }
